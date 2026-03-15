@@ -1,0 +1,7 @@
+{
+  "name": "elegant-lux-selfcare",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
