@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="#8b7d65" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Essential oil bottle -->
+  <path d="M30,38 Q24,42 24,48 L24,78 Q24,88 32,88 L48,88 Q56,88 56,78 L56,48 Q56,42 50,38" fill="#c4b99a" opacity="0.15"/>
+  <path d="M30,38 Q24,42 24,48 L24,78 Q24,88 32,88 L48,88 Q56,88 56,78 L56,48 Q56,42 50,38"/>
+  <!-- Narrow neck -->
+  <rect x="34" y="26" width="12" height="12" rx="2"/>
+  <!-- Cork/dropper -->
+  <path d="M36,26 L36,20 Q36,16 40,14 Q44,16 44,20 L44,26" fill="#c4b99a" opacity="0.2"/>
+  <path d="M36,26 L36,20 Q36,16 40,14 Q44,16 44,20 L44,26"/>
+  <!-- Olive/botanical branch on bottle -->
+  <path d="M32,58 Q40,52 48,58" opacity="0.3"/>
+  <path d="M35,56 Q32,52 35,48 Q38,52 35,56" fill="#8b7d65" opacity="0.1"/>
+  <path d="M35,56 Q32,52 35,48" opacity="0.3"/>
+  <path d="M45,56 Q48,52 45,48 Q42,52 45,56" fill="#8b7d65" opacity="0.1"/>
+  <path d="M45,56 Q48,52 45,48" opacity="0.3"/>
+  <circle cx="40" cy="54" r="2" fill="#8b7d65" opacity="0.1"/>
+  <!-- Oil drop -->
+  <path d="M40,68 Q37,73 40,77 Q43,73 40,68" fill="#c4b99a" opacity="0.25"/>
+  <path d="M40,68 Q37,73 40,77 Q43,73 40,68" opacity="0.4"/>
+</svg>

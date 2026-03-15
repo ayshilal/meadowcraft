@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" stroke="#8b7d65" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Lotus flower -->
+  <g transform="translate(40,42)">
+    <!-- Outer petals -->
+    <path d="M0,-25 Q-12,-15 0,0 Q12,-15 0,-25" fill="#c4b99a" opacity="0.1"/>
+    <path d="M0,-25 Q-12,-15 0,0" opacity="0.4"/>
+    <path d="M-20,-18 Q-15,-8 0,0 Q-5,-15 -20,-18" fill="#c4b99a" opacity="0.1"/>
+    <path d="M-20,-18 Q-15,-8 0,0" opacity="0.35"/>
+    <path d="M20,-18 Q15,-8 0,0 Q5,-15 20,-18" fill="#c4b99a" opacity="0.1"/>
+    <path d="M20,-18 Q15,-8 0,0" opacity="0.35"/>
+    <path d="M-28,-6 Q-16,-2 0,0 Q-12,-10 -28,-6" fill="#c4b99a" opacity="0.08"/>
+    <path d="M-28,-6 Q-16,-2 0,0" opacity="0.3"/>
+    <path d="M28,-6 Q16,-2 0,0 Q12,-10 28,-6" fill="#c4b99a" opacity="0.08"/>
+    <path d="M28,-6 Q16,-2 0,0" opacity="0.3"/>
+    <!-- Center -->
+    <circle cx="0" cy="-4" r="3" fill="#8b7d65" opacity="0.15"/>
+  </g>
+  <!-- Water ripple below -->
+  <path d="M15,52 Q28,48 40,52 Q52,56 65,52" opacity="0.2"/>
+  <path d="M20,58 Q30,55 40,58 Q50,61 60,58" opacity="0.15"/>
+  <!-- Dots -->
+  <circle cx="10" cy="20" r="1" fill="#8b7d65" opacity="0.1"/>
+  <circle cx="70" cy="20" r="1" fill="#8b7d65" opacity="0.1"/>
+  <circle cx="15" cy="65" r="0.8" fill="#8b7d65" opacity="0.1"/>
+  <circle cx="65" cy="65" r="0.8" fill="#8b7d65" opacity="0.1"/>
+</svg>

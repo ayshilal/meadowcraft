@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" stroke="#8b7d65" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Open book / knowledge -->
+  <path d="M15,55 L15,25 Q15,20 25,22 L40,28" fill="#c4b99a" opacity="0.1"/>
+  <path d="M65,55 L65,25 Q65,20 55,22 L40,28" fill="#c4b99a" opacity="0.1"/>
+  <path d="M15,55 L15,25 Q15,20 25,22 L40,28"/>
+  <path d="M65,55 L65,25 Q65,20 55,22 L40,28"/>
+  <line x1="40" y1="28" x2="40" y2="55"/>
+  <line x1="15" y1="55" x2="65" y2="55" opacity="0.5"/>
+  <!-- Page lines -->
+  <line x1="20" y1="32" x2="36" y2="36" opacity="0.2"/>
+  <line x1="20" y1="37" x2="36" y2="41" opacity="0.2"/>
+  <line x1="20" y1="42" x2="36" y2="46" opacity="0.2"/>
+  <line x1="44" y1="36" x2="60" y2="32" opacity="0.2"/>
+  <line x1="44" y1="41" x2="60" y2="37" opacity="0.2"/>
+  <line x1="44" y1="46" x2="60" y2="42" opacity="0.2"/>
+  <!-- Small botanical above book -->
+  <path d="M40,22 Q36,16 40,10 Q44,16 40,22" fill="#8b7d65" opacity="0.1"/>
+  <path d="M40,22 Q36,16 40,10" opacity="0.3"/>
+  <path d="M36,20 Q30,18 28,14" opacity="0.2"/>
+  <path d="M44,20 Q50,18 52,14" opacity="0.2"/>
+</svg>

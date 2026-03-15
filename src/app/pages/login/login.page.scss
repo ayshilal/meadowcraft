@@ -1,0 +1,111 @@
+.login-content {
+  --background: var(--lux-parchment);
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  padding: 40px 24px;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 48px;
+
+  .logo-circle {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border: 2px solid var(--lux-border-dark);
+    padding: 3px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      border: 1px solid var(--lux-border-dark);
+      border-radius: 50%;
+    }
+
+    ion-icon {
+      font-size: 36px;
+      color: var(--lux-ink);
+    }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 400;
+    color: var(--lux-ink);
+    margin: 0;
+  }
+
+  p {
+    font-size: 13px;
+    color: var(--lux-ink-light);
+    margin-top: 6px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+  }
+}
+
+.form-section {
+  .input-group {
+    margin-bottom: 16px;
+  }
+
+  .custom-input {
+    --border-radius: 4px;
+    --background: var(--lux-parchment-dark);
+    --border-color: var(--lux-border);
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .login-btn {
+    --background: var(--lux-ink);
+    --color: var(--lux-parchment);
+    --border-radius: 4px;
+    height: 50px;
+    margin-top: 24px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 3px;
+    --box-shadow: none;
+  }
+
+  .skip-btn {
+    --color: var(--lux-ink-light);
+    margin-top: 8px;
+    font-size: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 1px;
+  }
+
+  .signup-link {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 15px;
+    color: var(--lux-ink-light);
+    font-family: 'Cormorant Garamond', serif;
+
+    a {
+      color: var(--lux-ink);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+}

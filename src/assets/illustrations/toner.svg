@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="#8b7d65" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Spray bottle -->
+  <path d="M28,35 L24,38 L24,85 Q24,92 30,92 L50,92 Q56,92 56,85 L56,38 L52,35" fill="#c4b99a" opacity="0.15"/>
+  <path d="M28,35 L24,38 L24,85 Q24,92 30,92 L50,92 Q56,92 56,85 L56,38 L52,35"/>
+  <!-- Bottle cap -->
+  <rect x="30" y="25" width="20" height="10" rx="3"/>
+  <!-- Spray nozzle -->
+  <path d="M50,28 L58,28 L60,25 L62,28" stroke-width="1.2"/>
+  <!-- Mist lines -->
+  <path d="M64,22 Q68,20 70,16" opacity="0.3" stroke-dasharray="2,2"/>
+  <path d="M64,25 Q70,24 74,22" opacity="0.25" stroke-dasharray="2,2"/>
+  <path d="M64,28 Q68,30 70,34" opacity="0.3" stroke-dasharray="2,2"/>
+  <!-- Liquid level -->
+  <path d="M26,55 Q40,50 54,55" opacity="0.3"/>
+  <!-- Rose decoration -->
+  <path d="M40,68 Q36,64 40,60 Q44,64 40,68" fill="#8b7d65" opacity="0.15"/>
+  <path d="M40,68 Q44,64 40,60 Q36,64 40,68" opacity="0.3"/>
+  <path d="M37,68 Q33,65 37,62" opacity="0.3"/>
+  <path d="M43,68 Q47,65 43,62" opacity="0.3"/>
+  <path d="M40,68 L40,80" opacity="0.3"/>
+  <path d="M37,74 L40,72 L43,74" opacity="0.3"/>
+</svg>

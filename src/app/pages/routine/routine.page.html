@@ -1,0 +1,286 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>My Routine</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="routineType" (ionChange)="onSegmentChange($event)" class="routine-segment">
+    <ion-segment-button value="Morning">
+      <ion-icon name="sunny-outline"></ion-icon>
+      <ion-label>Morning</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="Evening">
+      <ion-icon name="moon-outline"></ion-icon>
+      <ion-label>Evening</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Routine Banner -->
+  <div class="routine-banner"
+       [style.background-image]="'url(' + getRoutinePattern() + ')'">
+    <div class="banner-label-overlay">
+      <div class="banner-label-inner">
+        <ion-icon [name]="routineType === 'Morning' ? 'sunny-outline' : 'moon-outline'" class="banner-icon"></ion-icon>
+        <div class="banner-title">{{ routineType }} Routine</div>
+        <div class="banner-count">{{ steps.length }} step{{ steps.length !== 1 ? 's' : '' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-section" *ngIf="steps.length > 0">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill"
+           [style.width.%]="(getProgress() / steps.length) * 100">
+      </div>
+    </div>
+    <div class="progress-label">
+      <span *ngIf="getProgress() < steps.length">{{ getProgress() }}/{{ steps.length }} complete</span>
+      <span *ngIf="getProgress() === steps.length" class="all-done">All done!</span>
+    </div>
+  </div>
+
+  <!-- Discuss Your Routine — compact bar -->
+  <div class="discuss-bar" (click)="openChat()"
+       style="background-image: url('assets/images/morris/medway.jpg')">
+    <div class="discuss-bar-inner">
+      <img src="assets/illustrations/skincare-tip.svg" alt="" class="discuss-bar-icon">
+      <div class="discuss-bar-text">
+        <span class="discuss-bar-title">Discuss Your Routine</span>
+        <span class="discuss-bar-sub">Ask your AI dermatologist</span>
+      </div>
+      <ion-icon name="chatbubbles-outline" class="discuss-bar-arrow"></ion-icon>
+    </div>
+  </div>
+
+  <ion-list lines="none" class="step-list" *ngIf="steps.length > 0">
+    <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($event)">
+      <ion-item-sliding *ngFor="let step of steps; let i = index">
+        <ion-item class="step-item" lines="none" (click)="openProductDetail(step.product)">
+          <div class="step-card-inner" [class.step-done]="isStepDone(i)">
+            <div class="step-check" (click)="toggleStepDone(i, $event)"
+                 [class.checked]="isStepDone(i)">
+              <ion-icon name="checkmark-outline" *ngIf="isStepDone(i)"></ion-icon>
+              <span *ngIf="!isStepDone(i)" class="step-number-small">{{ i + 1 }}</span>
+            </div>
+            <div class="step-pattern-strip"
+                 [style.background-image]="'url(' + getCategoryMorrisPattern(step.product?.category || 'Other') + ')'">
+              <div class="step-number-frame">
+                <span class="step-number">{{ i + 1 }}</span>
+              </div>
+            </div>
+            <div class="step-info">
+              <h3>{{ step.product?.name || 'Product' }}</h3>
+              <p class="step-brand">{{ step.product?.brand }}</p>
+              <ion-note *ngIf="step.notes" class="step-notes">{{ step.notes }}</ion-note>
+              <div class="step-category-label" *ngIf="step.product?.category">
+                <span class="category-text">{{ step.product?.category }}</span>
+              </div>
+            </div>
+          </div>
+          <ion-reorder slot="end">
+            <ion-icon name="reorder-three-outline"></ion-icon>
+          </ion-reorder>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="removeStep(step)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-reorder-group>
+  </ion-list>
+
+  <div class="empty-state" *ngIf="steps.length === 0">
+    <div class="empty-watercolor"
+         style="background-image: url('assets/images/morris/larkspur.jpg')">
+      <div class="empty-label-overlay">
+        <div class="empty-label-inner">
+          <ion-icon name="water-outline"></ion-icon>
+          <h3>No steps yet</h3>
+          <p>Add products to your {{ routineType.toLowerCase() }} routine</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openAddModal()" class="add-fab">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Chat Modal -->
+  <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()" class="chat-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>AI Dermatologist</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeChat()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="chat-content" #chatContent>
+        <div class="chat-pattern-header"
+             style="background-image: url('assets/images/morris/windrush.jpg')">
+          <div class="chat-header-label">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+            <span>AI Dermatologist</span>
+          </div>
+        </div>
+
+        <!-- Not configured state -->
+        <div class="chat-setup" *ngIf="!isAiConfigured">
+          <div class="setup-card">
+            <ion-icon name="chatbubbles-outline" class="setup-icon"></ion-icon>
+            <h3>Set Up AI Chat</h3>
+            <p>To chat with your AI dermatologist, add your Anthropic API key to the environment configuration:</p>
+            <code>src/environments/environment.ts</code>
+            <p class="setup-hint">Set the <strong>anthropicApiKey</strong> field with your key.</p>
+          </div>
+        </div>
+
+        <!-- Chat messages -->
+        <div class="chat-messages" *ngIf="isAiConfigured">
+          <div *ngFor="let msg of chatMessages"
+               class="chat-bubble"
+               [class.user-bubble]="msg.role === 'user'"
+               [class.ai-bubble]="msg.role === 'assistant'">
+            <div class="bubble-avatar" *ngIf="msg.role === 'assistant'">
+              <img src="assets/illustrations/skincare-tip.svg" alt="">
+            </div>
+            <div class="bubble-content">
+              <p>{{ msg.content }}</p>
+              <span class="bubble-time">{{ msg.timestamp | date:'shortTime' }}</span>
+            </div>
+          </div>
+          <div class="typing-indicator" *ngIf="isSending">
+            <div class="bubble-avatar">
+              <img src="assets/illustrations/skincare-tip.svg" alt="">
+            </div>
+            <div class="typing-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+      <ion-footer class="chat-footer" *ngIf="isAiConfigured">
+        <div class="chat-input-bar">
+          <ion-textarea
+            [(ngModel)]="chatInput"
+            placeholder="Ask about your routine..."
+            [autoGrow]="true"
+            [rows]="1"
+            class="chat-textarea"
+            (keydown.enter)="$event.preventDefault(); sendChatMessage()"
+          ></ion-textarea>
+          <ion-button fill="clear" class="send-btn" (click)="sendChatMessage()" [disabled]="isSending || !chatInput.trim()">
+            <ion-icon name="send-outline" *ngIf="!isSending"></ion-icon>
+            <ion-spinner name="dots" *ngIf="isSending"></ion-spinner>
+          </ion-button>
+        </div>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Product Detail Modal -->
+  <ion-modal [isOpen]="isDetailOpen" (didDismiss)="closeProductDetail()" class="product-detail-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>{{ selectedProduct?.name }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeProductDetail()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="detail-content">
+        <div class="product-detail-header"
+             [style.background-image]="'url(' + getCategoryMorrisPattern(selectedProduct?.category || 'Other') + ')'">
+          <div class="detail-header-label">
+            <img [src]="selectedProduct?.imageUrl || getCategoryImage(selectedProduct?.category || 'Other')" alt="" class="detail-header-illustration">
+            <span>{{ selectedProduct?.category }}</span>
+          </div>
+        </div>
+
+        <div class="product-detail-body">
+          <h1 class="detail-name">{{ selectedProduct?.name }}</h1>
+          <p class="detail-brand">{{ selectedProduct?.brand }}</p>
+
+          <div class="detail-category-badge">
+            <span>{{ selectedProduct?.category }}</span>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedProduct?.description">
+            <h4>Description</h4>
+            <p>{{ selectedProduct?.description }}</p>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedProduct?.notes">
+            <h4>Notes</h4>
+            <p>{{ selectedProduct?.notes }}</p>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Add Step</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding modal-content">
+        <div class="modal-pattern-header"
+             [style.background-image]="'url(' + getRoutinePattern() + ')'">
+          <div class="modal-header-label">
+            <span>New Step</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <ion-select
+            label="Select Product"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="selectedProductId"
+            interface="action-sheet"
+            class="custom-input"
+          >
+            <ion-select-option *ngFor="let product of products" [value]="product.id">
+              {{ product.name }} ({{ product.brand }})
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="form-group">
+          <ion-input
+            label="Notes (optional)"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="newStepNotes"
+            placeholder="e.g. Apply for 60 seconds"
+            class="custom-input"
+          ></ion-input>
+        </div>
+
+        <ion-button expand="block" class="save-btn" (click)="addStep()">
+          Add to {{ routineType }} Routine
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

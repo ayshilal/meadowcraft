@@ -1,37 +1,191 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * Meadowcraft Self Care - Global Styles
  */
 
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+/* ---- Meadowcraft Vintage Botanical Styles ---- */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
+* {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+}
+
+ion-content {
+  --background: var(--lux-parchment);
+}
+
+ion-toolbar {
+  --background: var(--lux-parchment);
+  --border-width: 0;
+}
+
+ion-title {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--lux-ink);
+  letter-spacing: 0.5px;
+}
+
+ion-tab-bar {
+  --background: var(--lux-parchment);
+  --border: none;
+  border-top: 1px solid var(--lux-border);
+  padding-top: 6px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+ion-tab-button {
+  --color: var(--ion-color-medium);
+  --color-selected: var(--lux-ink);
+  font-size: 10px;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  ion-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+}
+
+ion-card {
+  --background: var(--lux-parchment-dark);
+  border-radius: 8px;
+  box-shadow: none;
+  border: 1.5px solid var(--lux-border);
+}
+
+ion-modal {
+  --border-radius: 0;
+  --background: var(--lux-parchment);
+
+  ion-toolbar {
+    --background: var(--lux-parchment);
+    border-bottom: 1px solid var(--lux-border);
+  }
+}
+
+ion-searchbar {
+  --background: var(--lux-parchment-dark);
+  --border-radius: 4px;
+  --box-shadow: none;
+  --placeholder-color: var(--ion-color-medium);
+  --icon-color: var(--ion-color-medium);
+  border: 1px solid var(--lux-border);
+  border-radius: 4px;
+}
+
+ion-fab-button {
+  --background: var(--lux-ink);
+  --color: var(--lux-parchment);
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --border-radius: 50%;
+}
+
+ion-toast {
+  --background: var(--lux-ink);
+  --color: var(--lux-parchment);
+  --border-radius: 4px;
+}
+
+ion-segment {
+  --background: var(--lux-parchment-dark);
+  border: 1px solid var(--lux-border);
+  border-radius: 4px;
+}
+
+ion-segment-button {
+  --indicator-color: var(--lux-ink);
+  --color: var(--lux-ink-light);
+  --color-checked: var(--lux-parchment);
+  --border-radius: 3px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+ion-chip {
+  --background: transparent;
+  --color: var(--lux-ink);
+  border: 1px solid var(--lux-border);
+  border-radius: 2px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+ion-input[fill="outline"],
+ion-textarea[fill="outline"],
+ion-select[fill="outline"] {
+  --border-radius: 4px;
+  --border-color: var(--lux-border);
+  --highlight-color-focused: var(--lux-ink);
+  font-family: 'Cormorant Garamond', serif;
+}
+
+ion-button {
+  --border-radius: 4px;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Double-border frame mixin via class */
+.vintage-frame {
+  position: relative;
+  border: 1.5px solid var(--lux-border-dark);
+  padding: 3px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border: 1px solid var(--lux-border-dark);
+    pointer-events: none;
+  }
+}
+
+/* Horizontal rule vintage style */
+.vintage-divider {
+  border: none;
+  border-top: 1.5px solid var(--lux-ink);
+  margin: 12px auto;
+  width: 60%;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lux-border);
+  border-radius: 2px;
+}

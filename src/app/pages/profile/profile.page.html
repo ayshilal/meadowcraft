@@ -1,0 +1,89 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="profile-banner"
+       style="background-image: url('assets/images/morris/cray.jpg')">
+    <div class="banner-overlay">
+      <div class="banner-label">
+        <div class="avatar-wrapper">
+          <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+        </div>
+        <h2 class="user-name">{{ userName }}</h2>
+        <p class="user-email">{{ userEmail }}</p>
+      </div>
+    </div>
+  </div>
+
+  <ion-list lines="none" class="settings-list">
+    <ion-item class="setting-item" (click)="showComingSoon()" button>
+      <ion-icon name="person-circle-outline" slot="start" class="setting-icon"></ion-icon>
+      <ion-label>
+        <h3>Edit Profile</h3>
+        <p>Update your personal information</p>
+      </ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+    </ion-item>
+
+    <ion-item class="setting-item" (click)="showComingSoon()" button>
+      <ion-icon name="notifications-outline" slot="start" class="setting-icon"></ion-icon>
+      <ion-label>
+        <h3>Notifications</h3>
+        <p>Routine reminders & tips</p>
+      </ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+    </ion-item>
+
+    <ion-item class="setting-item" (click)="showComingSoon()" button>
+      <ion-icon name="color-palette-outline" slot="start" class="setting-icon"></ion-icon>
+      <ion-label>
+        <h3>Appearance</h3>
+        <p>Theme & display settings</p>
+      </ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+    </ion-item>
+
+    <ion-item class="setting-item" (click)="showComingSoon()" button>
+      <ion-icon name="heart-outline" slot="start" class="setting-icon"></ion-icon>
+      <ion-label>
+        <h3>Favorites</h3>
+        <p>Your saved products & tips</p>
+      </ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+    </ion-item>
+
+    <ion-item class="setting-item" (click)="showComingSoon()" button>
+      <ion-icon name="shield-checkmark-outline" slot="start" class="setting-icon"></ion-icon>
+      <ion-label>
+        <h3>Privacy</h3>
+        <p>Data & privacy settings</p>
+      </ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+    </ion-item>
+
+    <ion-item class="setting-item" (click)="showComingSoon()" button>
+      <ion-icon name="information-circle-outline" slot="start" class="setting-icon"></ion-icon>
+      <ion-label>
+        <h3>About</h3>
+        <p>Meadowcraft v1.0</p>
+      </ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <div class="logout-section">
+    <ion-item class="logout-item" (click)="showComingSoon()" button lines="none">
+      <ion-icon name="log-out-outline" slot="start" class="logout-icon"></ion-icon>
+      <ion-label color="danger">Log Out</ion-label>
+    </ion-item>
+  </div>
+
+  <div class="app-footer">
+    <img src="assets/illustrations/leaf-branch.svg" alt="" class="footer-branch">
+    <p>Meadowcraft</p>
+    <p class="version">Version 1.0.0</p>
+  </div>
+</ion-content>

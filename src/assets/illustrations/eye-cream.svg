@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="#8b7d65" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Small elegant tube -->
+  <path d="M28,40 L28,80 Q28,88 34,88 L46,88 Q52,88 52,80 L52,40" fill="#c4b99a" opacity="0.15"/>
+  <path d="M28,40 L28,80 Q28,88 34,88 L46,88 Q52,88 52,80 L52,40"/>
+  <!-- Tube top/applicator -->
+  <path d="M34,40 L34,30 Q34,24 40,22 Q46,24 46,30 L46,40"/>
+  <line x1="28" y1="40" x2="52" y2="40"/>
+  <!-- Applicator tip -->
+  <ellipse cx="40" cy="20" rx="4" ry="3" fill="#c4b99a" opacity="0.2"/>
+  <ellipse cx="40" cy="20" rx="4" ry="3"/>
+  <!-- Eye symbol on tube -->
+  <path d="M33,60 Q40,52 47,60 Q40,66 33,60" opacity="0.4"/>
+  <circle cx="40" cy="59.5" r="3" opacity="0.3"/>
+  <circle cx="40" cy="59.5" r="1.2" fill="#8b7d65" opacity="0.2"/>
+  <!-- Delicate lashes -->
+  <path d="M33,58 L30,55" opacity="0.2"/>
+  <path d="M35,56 L34,53" opacity="0.2"/>
+  <path d="M47,58 L50,55" opacity="0.2"/>
+  <path d="M45,56 L46,53" opacity="0.2"/>
+</svg>

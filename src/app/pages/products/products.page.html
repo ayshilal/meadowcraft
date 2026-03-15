@@ -1,0 +1,235 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>My Products</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Search products..."
+      [debounce]="300"
+      (ionInput)="onSearchChange($event)"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="category-chips">
+    <ion-chip
+      *ngFor="let cat of categories"
+      [class.selected]="selectedCategory === cat"
+      (click)="selectedCategory = cat; filterProducts()"
+    >
+      <ion-label>{{ cat }}</ion-label>
+    </ion-chip>
+  </div>
+
+  <!-- Category Banner -->
+  <div class="category-banner"
+       *ngIf="selectedCategory !== 'All'"
+       [style.background-image]="'url(' + getSelectedCategoryPattern() + ')'">
+    <div class="banner-label-overlay">
+      <div class="banner-label-inner">
+        <img [src]="getCategoryImage(selectedCategory)" alt="" class="banner-illustration">
+        <div class="banner-title">{{ selectedCategory }}</div>
+        <div class="banner-count">{{ filteredProducts.length }} product{{ filteredProducts.length !== 1 ? 's' : '' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-count" *ngIf="selectedCategory === 'All'">
+    <span>{{ filteredProducts.length }} product{{ filteredProducts.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <ion-list lines="none" class="product-list">
+    <ion-item-sliding *ngFor="let product of filteredProducts">
+      <ion-item class="product-item" lines="none" (click)="openProductDetail(product)">
+        <div class="product-card-inner">
+          <div class="product-pattern-strip"
+               [style.background-image]="'url(' + getCategoryMorrisPattern(product.category) + ')'">
+            <div class="illustration-overlay">
+              <img [src]="product.imageUrl || getCategoryImage(product.category)" alt="" class="product-illustration">
+            </div>
+          </div>
+          <div class="product-info">
+            <h3>{{ product.name }}</h3>
+            <p class="brand">{{ product.brand }}</p>
+            <div class="category-label">
+              <span class="category-text">{{ product.category }}</span>
+            </div>
+          </div>
+        </div>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteProduct(product)">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <div class="empty-state" *ngIf="filteredProducts.length === 0">
+    <div class="empty-watercolor"
+         style="background-image: url('assets/images/morris/larkspur.jpg')">
+      <div class="empty-label-overlay">
+        <div class="empty-label-inner">
+          <ion-icon name="cube-outline"></ion-icon>
+          <h3>No products yet</h3>
+          <p>Add your first skincare product to get started</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openAddModal()" class="add-fab">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Product Detail Modal -->
+  <ion-modal [isOpen]="isDetailOpen" (didDismiss)="closeProductDetail()" class="product-detail-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>{{ selectedProduct?.name }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeProductDetail()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="detail-content">
+        <div class="product-detail-header"
+             [style.background-image]="'url(' + getCategoryMorrisPattern(selectedProduct?.category || 'Other') + ')'">
+          <div class="detail-header-label">
+            <img [src]="selectedProduct?.imageUrl || getCategoryImage(selectedProduct?.category || 'Other')" alt="" class="detail-header-illustration">
+            <span>{{ selectedProduct?.category }}</span>
+          </div>
+        </div>
+
+        <div class="product-detail-body">
+          <h1 class="detail-name">{{ selectedProduct?.name }}</h1>
+          <p class="detail-brand">{{ selectedProduct?.brand }}</p>
+
+          <div class="detail-category-badge">
+            <span>{{ selectedProduct?.category }}</span>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedProduct?.description">
+            <h4>Description</h4>
+            <p>{{ selectedProduct?.description }}</p>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedProduct?.notes">
+            <h4>Notes</h4>
+            <p>{{ selectedProduct?.notes }}</p>
+          </div>
+
+          <div class="detail-section" *ngIf="productRoutines.length > 0">
+            <h4>Used In</h4>
+            <div class="routine-chips">
+              <span class="routine-chip" *ngFor="let r of productRoutines">
+                <ion-icon [name]="r === 'Morning' ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+                {{ r }} Routine
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-section" *ngIf="productRoutines.length === 0">
+            <h4>Used In</h4>
+            <p class="not-used">Not added to any routine yet</p>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Add Product</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding modal-content">
+        <div class="modal-pattern-header"
+             style="background-image: url('assets/images/morris/windrush.jpg')">
+          <div class="modal-header-label">
+            <span>New Product</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <ion-input
+            label="Product Name"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="newProduct.name"
+            placeholder="e.g. Gentle Cleanser"
+            class="custom-input"
+          ></ion-input>
+        </div>
+
+        <div class="form-group">
+          <ion-input
+            label="Brand"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="newProduct.brand"
+            placeholder="e.g. CeraVe"
+            class="custom-input"
+          ></ion-input>
+        </div>
+
+        <div class="form-group">
+          <ion-select
+            label="Category"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="newProduct.category"
+            interface="action-sheet"
+            class="custom-input"
+          >
+            <ion-select-option *ngFor="let cat of productCategories" [value]="cat">
+              {{ cat }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="form-group">
+          <ion-textarea
+            label="Description"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="newProduct.description"
+            placeholder="What does this product do?"
+            [autoGrow]="true"
+            class="custom-input"
+          ></ion-textarea>
+        </div>
+
+        <div class="form-group">
+          <ion-textarea
+            label="Notes"
+            labelPlacement="floating"
+            fill="outline"
+            [(ngModel)]="newProduct.notes"
+            placeholder="Personal notes..."
+            [autoGrow]="true"
+            class="custom-input"
+          ></ion-textarea>
+        </div>
+
+        <ion-button expand="block" class="save-btn" (click)="addProduct()">
+          Add Product
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

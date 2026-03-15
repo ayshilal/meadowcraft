@@ -1,0 +1,138 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Discover</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="selectedTab" (ionChange)="onTabChange($event)" class="discover-segment">
+    <ion-segment-button value="facts">
+      <ion-icon name="bulb-outline"></ion-icon>
+      <ion-label>Beauty Facts</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="tips">
+      <ion-icon name="heart-outline"></ion-icon>
+      <ion-label>Self Care</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <img src="assets/illustrations/leaf-branch.svg" alt="" class="discover-branch">
+
+  <div *ngIf="selectedTab === 'facts'" class="facts-section">
+    <!-- Beauty Facts Banner -->
+    <div class="section-banner"
+         [style.background-image]="'url(' + getFactBannerImage() + ')'">
+      <div class="banner-label-overlay">
+        <div class="banner-label-inner">
+          <img src="assets/illustrations/botanical-hero.svg" alt="" class="banner-illustration">
+          <div class="banner-title">Beauty Facts</div>
+          <div class="banner-count">{{ beautyFacts.length }} fact{{ beautyFacts.length !== 1 ? 's' : '' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <ion-grid class="watercolor-grid">
+      <ion-row>
+        <ion-col size="6" *ngFor="let fact of beautyFacts; let i = index">
+          <div class="watercolor-card"
+               [style.background-image]="'url(' + getFactImage(i) + ')'"
+               (click)="openDetail(fact, i, 'facts')">
+            <button class="favorite-btn"
+                    [class.is-favorite]="isFavorite('facts', fact.id)"
+                    (click)="toggleFavorite('facts', fact.id, $event)">
+              <ion-icon [name]="isFavorite('facts', fact.id) ? 'heart' : 'heart-outline'"></ion-icon>
+            </button>
+            <div class="card-label-overlay">
+              <div class="label-inner">
+                <div class="label-title">{{ fact.title }}</div>
+                <div class="label-sub">{{ fact.category }}</div>
+              </div>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="section-footer">
+      <img src="assets/illustrations/leaf-branch.svg" alt="" class="footer-ornament">
+    </div>
+  </div>
+
+  <div *ngIf="selectedTab === 'tips'" class="tips-section">
+    <!-- Self Care Banner -->
+    <div class="section-banner"
+         [style.background-image]="'url(' + getTipBannerImage() + ')'">
+      <div class="banner-label-overlay">
+        <div class="banner-label-inner">
+          <img src="assets/illustrations/wellness.svg" alt="" class="banner-illustration">
+          <div class="banner-title">Self Care</div>
+          <div class="banner-count">{{ recommendations.length }} recommendation{{ recommendations.length !== 1 ? 's' : '' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <ion-grid class="watercolor-grid">
+      <ion-row>
+        <ion-col size="6" *ngFor="let rec of recommendations; let i = index">
+          <div class="watercolor-card"
+               [style.background-image]="'url(' + getTipImage(i) + ')'"
+               (click)="openDetail(rec, i, 'tips')">
+            <button class="favorite-btn"
+                    [class.is-favorite]="isFavorite('tips', rec.id)"
+                    (click)="toggleFavorite('tips', rec.id, $event)">
+              <ion-icon [name]="isFavorite('tips', rec.id) ? 'heart' : 'heart-outline'"></ion-icon>
+            </button>
+            <div class="card-label-overlay">
+              <div class="label-inner">
+                <div class="label-title">{{ rec.title }}</div>
+                <div class="label-sub">{{ rec.category }}</div>
+              </div>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="section-footer">
+      <img src="assets/illustrations/leaf-branch.svg" alt="" class="footer-ornament">
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <ion-modal [isOpen]="isDetailOpen" (didDismiss)="closeDetail()" class="detail-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>{{ detailItem?.title }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="toggleFavorite(detailType, detailItem?.id)" class="modal-fav-btn">
+              <ion-icon [name]="isFavorite(detailType, detailItem?.id) ? 'heart' : 'heart-outline'"
+                        [class.heart-filled]="isFavorite(detailType, detailItem?.id)"></ion-icon>
+            </ion-button>
+            <ion-button (click)="closeDetail()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="detail-content">
+        <div class="detail-pattern-header"
+             [style.background-image]="'url(' + getDetailImage() + ')'">
+          <div class="detail-header-label">
+            <ion-icon [name]="getCategoryIcon(detailItem?.category || '')"></ion-icon>
+            <span>{{ detailItem?.category }}</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          <h1 class="detail-title">{{ detailItem?.title }}</h1>
+          <div class="detail-category-badge">
+            <ion-icon [name]="getCategoryIcon(detailItem?.category || '')"></ion-icon>
+            <span>{{ detailItem?.category }}</span>
+          </div>
+          <p class="detail-text">{{ getDetailContent() }}</p>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

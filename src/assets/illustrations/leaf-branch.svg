@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none" stroke="#8b7d65" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Horizontal decorative branch -->
+  <path d="M10,30 Q50,28 100,30 Q150,32 190,30" opacity="0.5"/>
+  <!-- Left leaves -->
+  <path d="M30,30 Q22,22 30,15 Q38,22 30,30" fill="#8b7d65" opacity="0.08"/>
+  <path d="M30,30 Q22,22 30,15" opacity="0.3"/>
+  <path d="M50,29 Q45,36 50,42 Q55,36 50,29" fill="#8b7d65" opacity="0.08"/>
+  <path d="M50,29 Q45,36 50,42" opacity="0.3"/>
+  <path d="M70,30 Q62,24 70,18 Q78,24 70,30" fill="#8b7d65" opacity="0.08"/>
+  <path d="M70,30 Q62,24 70,18" opacity="0.3"/>
+  <!-- Center flower -->
+  <circle cx="100" cy="30" r="6" fill="#c4b99a" opacity="0.2"/>
+  <circle cx="100" cy="30" r="4" opacity="0.3"/>
+  <circle cx="100" cy="30" r="2" fill="#8b7d65" opacity="0.2"/>
+  <!-- Right leaves -->
+  <path d="M130,30 Q138,24 130,18 Q122,24 130,30" fill="#8b7d65" opacity="0.08"/>
+  <path d="M130,30 Q138,24 130,18" opacity="0.3"/>
+  <path d="M150,31 Q155,38 150,44 Q145,38 150,31" fill="#8b7d65" opacity="0.08"/>
+  <path d="M150,31 Q155,38 150,44" opacity="0.3"/>
+  <path d="M170,30 Q178,22 170,15 Q162,22 170,30" fill="#8b7d65" opacity="0.08"/>
+  <path d="M170,30 Q178,22 170,15" opacity="0.3"/>
+</svg>

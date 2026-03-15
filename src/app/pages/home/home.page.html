@@ -1,0 +1,104 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <div class="logo-title">
+        <ion-icon name="flower-outline"></ion-icon>
+        <span>Meadowcraft</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="welcome-section">
+    <h1 class="greeting">{{ greeting }}</h1>
+    <hr class="vintage-divider">
+    <p class="date-text">{{ currentDate }}</p>
+  </div>
+
+  <ion-grid class="card-grid">
+    <ion-row>
+      <ion-col size="6">
+        <div class="watercolor-card" (click)="goToProducts()"
+             style="background-image: url('assets/images/morris/pimpernel.jpg')">
+          <div class="card-label-overlay">
+            <div class="label-inner">
+              <div class="label-title">My Products</div>
+              <div class="label-count">{{ productCount }}</div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+      <ion-col size="6">
+        <div class="watercolor-card" (click)="goToRoutine()"
+             style="background-image: url('assets/images/morris/strawberry-thief.jpg')">
+          <div class="card-label-overlay">
+            <div class="label-inner">
+              <div class="label-title">Daily Routine</div>
+              <div class="label-count">{{ morningDone + eveningDone }}/{{ morningStepCount + eveningStepCount }}</div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6">
+        <div class="watercolor-card" (click)="goToDiscover()"
+             style="background-image: url('assets/images/morris/honeysuckle.jpg')">
+          <div class="card-label-overlay">
+            <div class="label-inner">
+              <div class="label-title">Discover</div>
+              <div class="label-count">Tips & Facts</div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+      <ion-col size="6">
+        <div class="watercolor-card" (click)="goToRoutine()"
+             style="background-image: url('assets/images/morris/willow-bough.jpg')">
+          <div class="card-label-overlay">
+            <div class="label-inner">
+              <div class="label-title">Morning</div>
+              <div class="label-count">{{ morningDone }}/{{ morningStepCount }}</div>
+              <div class="streak-badge" *ngIf="morningStreak > 0">
+                {{ morningStreak }} day streak
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="tip-section" *ngIf="tipOfTheDay" (click)="goToDiscover()">
+    <div class="tip-watercolor"
+         style="background-image: url('assets/images/morris/fruit.jpg')">
+      <div class="tip-label-overlay">
+        <div class="tip-label-inner">
+          <span class="tip-eyebrow">Tip of the Day</span>
+          <h3 class="tip-title">{{ tipOfTheDay.title }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button expand="block" fill="outline" class="action-btn" (click)="goToProducts()">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Add Product
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" fill="outline" class="action-btn" (click)="goToRoutine()">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            My Routine
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

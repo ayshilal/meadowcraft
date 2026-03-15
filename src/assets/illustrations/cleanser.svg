@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="#8b7d65" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Bottle body -->
+  <path d="M25,35 L25,85 Q25,92 32,92 L48,92 Q55,92 55,85 L55,35" fill="#c4b99a" opacity="0.15"/>
+  <path d="M25,35 L25,85 Q25,92 32,92 L48,92 Q55,92 55,85 L55,35"/>
+  <!-- Bottle neck -->
+  <path d="M32,35 L32,22 Q32,18 36,18 L44,18 Q48,18 48,22 L48,35"/>
+  <!-- Pump -->
+  <path d="M38,18 L38,10 L50,10" stroke-width="1.5"/>
+  <circle cx="50" cy="10" r="3"/>
+  <!-- Label area -->
+  <rect x="29" y="48" width="22" height="28" rx="2" fill="#f4ead5" opacity="0.5"/>
+  <!-- Small leaf decoration on label -->
+  <path d="M40,55 Q36,50 40,45 Q44,50 40,55" fill="#8b7d65" opacity="0.2"/>
+  <path d="M40,55 L40,65" opacity="0.5"/>
+  <path d="M37,60 L40,58 L43,60" opacity="0.4"/>
+  <!-- Water drops -->
+  <path d="M18,50 Q17,53 18,55 Q19,53 18,50" fill="#8b7d65" opacity="0.2"/>
+  <path d="M62,60 Q61,63 62,65 Q63,63 62,60" fill="#8b7d65" opacity="0.2"/>
+</svg>

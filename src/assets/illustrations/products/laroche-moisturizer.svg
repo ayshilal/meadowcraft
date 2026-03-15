@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="#2a6496" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- La Roche-Posay-style tube - white with blue accents -->
+  <!-- Tube body -->
+  <path d="M24,30 L24,78 Q24,86 32,86 L48,86 Q56,86 56,78 L56,30" fill="#f0f0f0" opacity="0.6"/>
+  <path d="M24,30 L24,78 Q24,86 32,86 L48,86 Q56,86 56,78 L56,30"/>
+  <!-- Tube cap - flat top -->
+  <rect x="28" y="16" width="24" height="16" rx="4" fill="#2a6496" opacity="0.15"/>
+  <rect x="28" y="16" width="24" height="16" rx="4"/>
+  <!-- Cap top -->
+  <line x1="30" y1="16" x2="50" y2="16" stroke-width="1.5"/>
+  <!-- Blue stripe -->
+  <rect x="24" y="40" width="32" height="6" fill="#2a6496" opacity="0.15"/>
+  <line x1="24" y1="40" x2="56" y2="40" stroke-opacity="0.5"/>
+  <line x1="24" y1="46" x2="56" y2="46" stroke-opacity="0.5"/>
+  <!-- Label text lines -->
+  <line x1="30" y1="54" x2="50" y2="54" stroke-opacity="0.6" stroke-width="1.2"/>
+  <line x1="32" y1="58" x2="48" y2="58" stroke-opacity="0.3" stroke-width="0.7"/>
+  <line x1="30" y1="64" x2="50" y2="64" stroke-opacity="0.4" stroke-width="0.8"/>
+  <line x1="33" y1="68" x2="47" y2="68" stroke-opacity="0.3" stroke-width="0.6"/>
+  <!-- Cream swirl -->
+  <path d="M15,72 Q18,68 22,72" stroke-opacity="0.2" fill="none"/>
+  <path d="M58,65 Q62,62 65,66" stroke-opacity="0.2" fill="none"/>
+</svg>

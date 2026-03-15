@@ -1,0 +1,306 @@
+.discover-segment {
+  --background: var(--lux-parchment-dark);
+  border: 1px solid var(--lux-border);
+  border-radius: 4px;
+  margin-bottom: 4px;
+
+  ion-segment-button {
+    --indicator-color: var(--lux-ink);
+    --color-checked: var(--lux-parchment);
+    --border-radius: 3px;
+    min-height: 48px;
+    font-size: 13px;
+
+    ion-icon {
+      margin-right: 6px;
+      font-size: 16px;
+    }
+  }
+}
+
+// --- Leaf-Branch Divider ---
+.discover-branch {
+  display: block;
+  width: 140px;
+  margin: 0 auto 14px;
+  opacity: 0.4;
+}
+
+// --- Section Banner (Fauna-style) ---
+.section-banner {
+  position: relative;
+  width: 100%;
+  padding-bottom: 35%;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  .banner-label-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .banner-label-inner {
+    background: var(--lux-parchment);
+    border: 2px solid var(--lux-ink);
+    padding: 12px 24px;
+    text-align: center;
+    position: relative;
+    min-width: 55%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border: 1px solid var(--lux-ink);
+      pointer-events: none;
+    }
+  }
+
+  .banner-illustration {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    margin-bottom: 4px;
+  }
+
+  .banner-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--lux-ink);
+    line-height: 1.2;
+  }
+
+  .banner-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    color: var(--lux-ink-light);
+    margin-top: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+// --- Watercolor Grid (Fauna-style) ---
+.watercolor-grid {
+  ion-col {
+    padding: 5px;
+  }
+}
+
+.watercolor-card {
+  position: relative;
+  width: 100%;
+  padding-bottom: 130%;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  .card-label-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .label-inner {
+    background: var(--lux-parchment);
+    border: 2px solid var(--lux-ink);
+    padding: 10px 14px;
+    text-align: center;
+    position: relative;
+    min-width: 75%;
+    max-width: 90%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border: 1px solid var(--lux-ink);
+      pointer-events: none;
+    }
+  }
+
+  .label-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--lux-ink);
+    line-height: 1.3;
+  }
+
+  .label-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    color: var(--lux-ink-light);
+    margin-top: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+// --- Favorite Button on Cards ---
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--lux-ink-light);
+  }
+
+  &.is-favorite ion-icon {
+    color: #c27b7b;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+// --- Section Footer Ornament ---
+.section-footer {
+  text-align: center;
+  padding: 16px 0 8px;
+
+  .footer-ornament {
+    width: 100px;
+    opacity: 0.3;
+  }
+}
+
+// --- Detail Modal ---
+.detail-modal {
+  --background: var(--lux-parchment);
+}
+
+.detail-content {
+  --background: var(--lux-parchment);
+}
+
+.detail-pattern-header {
+  width: 100%;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
+  .detail-header-label {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--lux-parchment);
+    border: 2px solid var(--lux-ink);
+    padding: 6px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+
+    ion-icon {
+      font-size: 14px;
+      color: var(--lux-ink);
+    }
+
+    span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      color: var(--lux-ink);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.detail-body {
+  padding: 24px 20px;
+
+  .detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--lux-ink);
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+
+  .detail-category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--lux-parchment-dark);
+    border: 1px solid var(--lux-border);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+
+    ion-icon {
+      font-size: 13px;
+      color: var(--lux-ink-light);
+    }
+
+    span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      color: var(--lux-ink-light);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+  }
+
+  .detail-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--lux-ink);
+    margin: 0;
+  }
+}
+
+.modal-fav-btn {
+  .heart-filled {
+    color: #c27b7b;
+  }
+}

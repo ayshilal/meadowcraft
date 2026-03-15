@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" stroke="#8b7d65" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Mortar and pestle -->
+  <path d="M18,45 Q14,48 14,55 L14,62 Q14,70 25,72 L55,72 Q66,70 66,62 L66,55 Q66,48 62,45" fill="#c4b99a" opacity="0.12"/>
+  <path d="M18,45 Q14,48 14,55 L14,62 Q14,70 25,72 L55,72 Q66,70 66,62 L66,55 Q66,48 62,45"/>
+  <!-- Pestle -->
+  <path d="M50,45 Q55,38 58,28 Q60,22 56,20" stroke-width="1"/>
+  <ellipse cx="55" cy="19" rx="5" ry="3" fill="#c4b99a" opacity="0.15"/>
+  <ellipse cx="55" cy="19" rx="5" ry="3"/>
+  <!-- Herbs in mortar -->
+  <path d="M28,48 Q24,42 28,36 Q32,42 28,48" fill="#8b7d65" opacity="0.1"/>
+  <path d="M28,48 Q24,42 28,36" opacity="0.3"/>
+  <path d="M38,46 Q34,38 38,32 Q42,38 38,46" fill="#8b7d65" opacity="0.1"/>
+  <path d="M38,46 Q34,38 38,32" opacity="0.3"/>
+  <path d="M46,48 Q50,42 46,36" opacity="0.3"/>
+  <!-- Small berries -->
+  <circle cx="22" cy="35" r="2" fill="#8b7d65" opacity="0.1"/>
+  <circle cx="20" cy="38" r="1.5" fill="#8b7d65" opacity="0.1"/>
+  <circle cx="60" cy="40" r="2" fill="#8b7d65" opacity="0.1"/>
+</svg>

@@ -1,0 +1,393 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonList,
+  IonItem,
+  IonReorder,
+  IonReorderGroup,
+  IonIcon,
+  IonButton,
+  IonButtons,
+  IonModal,
+  IonSelect,
+  IonSelectOption,
+  IonInput,
+  IonNote,
+  IonFab,
+  IonFabButton,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+  IonFooter,
+  IonTextarea,
+  IonSpinner,
+  ToastController,
+  ItemReorderEventDetail,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  sunnyOutline,
+  moonOutline,
+  addOutline,
+  closeOutline,
+  reorderThreeOutline,
+  trashOutline,
+  waterOutline,
+  chatbubblesOutline,
+  sendOutline,
+  checkmarkOutline,
+} from 'ionicons/icons';
+import { RoutineService } from '../../services/routine.service';
+import { ProductService } from '../../services/product.service';
+import { AiChatService } from '../../services/ai-chat.service';
+import { ProgressService } from '../../services/progress.service';
+import { RoutineStep } from '../../models/routine.model';
+import { Product } from '../../models/product.model';
+import { ChatMessage } from '../../models/chat.model';
+
+@Component({
+  selector: 'app-routine',
+  templateUrl: './routine.page.html',
+  styleUrls: ['./routine.page.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonList,
+    IonItem,
+    IonReorder,
+    IonReorderGroup,
+    IonIcon,
+    IonButton,
+    IonButtons,
+    IonModal,
+    IonSelect,
+    IonSelectOption,
+    IonInput,
+    IonNote,
+    IonFab,
+    IonFabButton,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    IonFooter,
+    IonTextarea,
+    IonSpinner,
+  ],
+})
+export class RoutinePage implements OnInit {
+  routineType: 'Morning' | 'Evening' = 'Morning';
+  steps: RoutineStep[] = [];
+  products: Product[] = [];
+  isModalOpen = false;
+
+  selectedProductId: number | null = null;
+  newStepNotes = '';
+
+  // Product Detail
+  isDetailOpen = false;
+  selectedProduct: Product | null = null;
+
+  // Progress
+  doneCount = 0;
+
+  // Chat
+  isChatOpen = false;
+  chatMessages: ChatMessage[] = [];
+  chatInput = '';
+  isSending = false;
+  isAiConfigured = true;
+  @ViewChild('chatContent') chatContent!: IonContent;
+
+  constructor(
+    private routineService: RoutineService,
+    private productService: ProductService,
+    private aiChatService: AiChatService,
+    private progressService: ProgressService,
+    private toastController: ToastController
+  ) {
+    addIcons({
+      sunnyOutline,
+      moonOutline,
+      addOutline,
+      closeOutline,
+      reorderThreeOutline,
+      trashOutline,
+      waterOutline,
+      chatbubblesOutline,
+      sendOutline,
+      checkmarkOutline,
+    });
+    this.isAiConfigured = true;
+  }
+
+  ngOnInit() {
+    this.productService.products$.subscribe(
+      (products) => (this.products = products)
+    );
+    this.loadSteps();
+  }
+
+  loadSteps() {
+    if (this.routineType === 'Morning') {
+      this.routineService.morningRoutine$.subscribe(
+        (steps) => {
+          this.steps = [...steps].sort((a, b) => a.order - b.order);
+          this.doneCount = this.progressService.getDoneCount(this.routineType);
+        }
+      );
+    } else {
+      this.routineService.eveningRoutine$.subscribe(
+        (steps) => {
+          this.steps = [...steps].sort((a, b) => a.order - b.order);
+          this.doneCount = this.progressService.getDoneCount(this.routineType);
+        }
+      );
+    }
+  }
+
+  onSegmentChange(event: any) {
+    this.routineType = event.detail.value;
+    this.loadSteps();
+  }
+
+  handleReorder(event: CustomEvent<ItemReorderEventDetail>) {
+    const movedSteps = event.detail.complete(this.steps);
+    this.routineService.reorderSteps(this.routineType, movedSteps);
+  }
+
+  openAddModal() {
+    this.selectedProductId = null;
+    this.newStepNotes = '';
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  async addStep() {
+    if (!this.selectedProductId) {
+      const toast = await this.toastController.create({
+        message: 'Please select a product.',
+        duration: 2000,
+        color: 'warning',
+        position: 'top',
+      });
+      await toast.present();
+      return;
+    }
+
+    const product = this.products.find((p) => p.id === this.selectedProductId);
+    const newStep: RoutineStep = {
+      productId: this.selectedProductId,
+      product: product,
+      order: this.steps.length + 1,
+      notes: this.newStepNotes,
+    };
+
+    this.routineService
+      .addStep(this.routineType, newStep)
+      .subscribe(async () => {
+        this.isModalOpen = false;
+        const toast = await this.toastController.create({
+          message: 'Step added to your routine!',
+          duration: 2000,
+          color: 'success',
+          position: 'top',
+        });
+        await toast.present();
+      });
+  }
+
+  async removeStep(step: RoutineStep) {
+    if (step.id) {
+      this.routineService
+        .removeStep(this.routineType, step.id)
+        .subscribe(async () => {
+          const toast = await this.toastController.create({
+            message: 'Step removed.',
+            duration: 2000,
+            color: 'medium',
+            position: 'top',
+          });
+          await toast.present();
+        });
+    }
+  }
+
+  getStepIcon(index: number): string {
+    const icons = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+    return icons[index] || `${index + 1}`;
+  }
+
+  getRoutinePattern(): string {
+    return this.routineType === 'Morning'
+      ? 'assets/images/morris/willow-bough.jpg'
+      : 'assets/images/morris/strawberry-thief.jpg';
+  }
+
+  getCategoryMorrisPattern(category: string): string {
+    const patterns: Record<string, string> = {
+      Cleanser: 'assets/images/morris/willow-bough.jpg',
+      Toner: 'assets/images/morris/honeysuckle.jpg',
+      Serum: 'assets/images/morris/strawberry-thief.jpg',
+      Moisturizer: 'assets/images/morris/pimpernel.jpg',
+      SPF: 'assets/images/morris/fruit.jpg',
+      Mask: 'assets/images/morris/cray.jpg',
+      Exfoliant: 'assets/images/morris/snakeshead.jpg',
+      'Eye Cream': 'assets/images/morris/honeysuckle-met.jpg',
+      Oil: 'assets/images/morris/evenlode.jpg',
+      Other: 'assets/images/morris/medway.jpg',
+    };
+    return patterns[category] || 'assets/images/morris/wandle.jpg';
+  }
+
+  getCategoryImage(category: string): string {
+    const images: Record<string, string> = {
+      Cleanser: 'assets/illustrations/cleanser.svg',
+      Toner: 'assets/illustrations/toner.svg',
+      Serum: 'assets/illustrations/serum.svg',
+      Moisturizer: 'assets/illustrations/moisturizer.svg',
+      SPF: 'assets/illustrations/spf.svg',
+      Mask: 'assets/illustrations/mask.svg',
+      Exfoliant: 'assets/illustrations/exfoliant.svg',
+      'Eye Cream': 'assets/illustrations/eye-cream.svg',
+      Oil: 'assets/illustrations/oil.svg',
+      Other: 'assets/illustrations/other.svg',
+    };
+    return images[category] || 'assets/illustrations/other.svg';
+  }
+
+  // --- Progress Methods ---
+
+  isStepDone(index: number): boolean {
+    return this.progressService.isStepDone(this.routineType, index);
+  }
+
+  toggleStepDone(index: number, event: Event) {
+    event.stopPropagation();
+    this.progressService.toggleStep(this.routineType, index);
+    this.doneCount = this.progressService.getDoneCount(this.routineType);
+    if (this.doneCount === this.steps.length && this.steps.length > 0) {
+      this.progressService.markRoutineComplete(this.routineType);
+    }
+  }
+
+  getProgress(): number {
+    if (this.steps.length === 0) return 0;
+    return this.progressService.getDoneCount(this.routineType);
+  }
+
+  // --- Product Detail ---
+
+  openProductDetail(product: Product | undefined) {
+    if (!product) return;
+    this.selectedProduct = product;
+    this.isDetailOpen = true;
+  }
+
+  closeProductDetail() {
+    this.isDetailOpen = false;
+  }
+
+  // --- Chat Methods ---
+
+  private mockResponses: string[] = [
+    'Based on your routine, I\'d recommend adding a vitamin C serum in the morning before your moisturizer. It helps brighten skin and provides antioxidant protection throughout the day.',
+    'Great question! For your skin type, I\'d suggest waiting about 30 seconds between each step to let each product absorb properly. This maximizes the efficacy of each active ingredient.',
+    'I notice you\'re using a cleanser — make sure you\'re double cleansing in the evening if you wear sunscreen or makeup. An oil-based cleanser first, then your regular cleanser.',
+    'Hydration is key! Consider incorporating a hyaluronic acid serum. Apply it on damp skin for best results — it draws moisture into the skin layers.',
+    'Your routine looks well-structured! One suggestion: always apply products from thinnest to thickest consistency. This ensures proper absorption of each layer.',
+    'Retinol is a wonderful anti-aging ingredient, but start slowly — 2-3 times per week. And never mix it with vitamin C in the same routine. Use vitamin C in the morning and retinol at night.',
+  ];
+
+  openChat() {
+    this.isChatOpen = true;
+    if (this.chatMessages.length === 0) {
+      if (this.aiChatService.isConfigured()) {
+        const greeting = this.aiChatService.getGreeting(this.steps, this.routineType);
+        this.chatMessages.push(greeting);
+      } else {
+        this.chatMessages.push({
+          role: 'assistant',
+          content: this.steps.length > 0
+            ? `Hello! I can see your ${this.routineType.toLowerCase()} routine has ${this.steps.length} step${this.steps.length !== 1 ? 's' : ''}. I\'m your AI dermatologist — ask me anything about your skincare routine, product order, or ingredients!`
+            : `Welcome! I\'m your AI dermatologist. You haven\'t added any steps to your ${this.routineType.toLowerCase()} routine yet. I can help you build the perfect routine — just ask!`,
+          timestamp: new Date(),
+        });
+      }
+    }
+  }
+
+  closeChat() {
+    this.isChatOpen = false;
+  }
+
+  sendChatMessage() {
+    const message = this.chatInput.trim();
+    if (!message || this.isSending) return;
+
+    this.chatMessages.push({
+      role: 'user',
+      content: message,
+      timestamp: new Date(),
+    });
+    this.chatInput = '';
+    this.isSending = true;
+    this.scrollChatToBottom();
+
+    if (this.aiChatService.isConfigured()) {
+      this.aiChatService
+        .sendMessage(message, this.steps, this.routineType)
+        .subscribe({
+          next: (response) => {
+            this.chatMessages.push(response);
+            this.isSending = false;
+            this.scrollChatToBottom();
+          },
+          error: () => {
+            this.chatMessages.push({
+              role: 'assistant',
+              content: 'Sorry, something went wrong. Please try again.',
+              timestamp: new Date(),
+            });
+            this.isSending = false;
+            this.scrollChatToBottom();
+          },
+        });
+    } else {
+      // Mock response with realistic delay
+      setTimeout(() => {
+        const idx = Math.floor(Math.random() * this.mockResponses.length);
+        this.chatMessages.push({
+          role: 'assistant',
+          content: this.mockResponses[idx],
+          timestamp: new Date(),
+        });
+        this.isSending = false;
+        this.scrollChatToBottom();
+      }, 1200);
+    }
+  }
+
+  private scrollChatToBottom() {
+    setTimeout(() => {
+      this.chatContent?.scrollToBottom(300);
+    }, 100);
+  }
+}

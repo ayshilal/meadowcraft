@@ -1,0 +1,157 @@
+// --- Watercolor Profile Banner ---
+.profile-banner {
+  width: calc(100% + 32px);
+  margin: -16px -16px 24px;
+  padding-bottom: 55%;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+
+  .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.08);
+  }
+
+  .banner-label {
+    background: var(--lux-parchment);
+    border: 2px solid var(--lux-ink);
+    padding: 20px 28px;
+    text-align: center;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border: 1px solid var(--lux-ink);
+      pointer-events: none;
+    }
+  }
+}
+
+.avatar-wrapper {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 50px;
+  color: var(--lux-ink);
+}
+
+.user-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--lux-ink);
+}
+
+.user-email {
+  font-size: 13px;
+  color: var(--lux-ink-light);
+  margin-top: 2px;
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+// --- Settings List ---
+.settings-list {
+  background: transparent;
+
+  .setting-item {
+    --background: var(--lux-parchment-dark);
+    --border-radius: 4px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 64px;
+    border-radius: 4px;
+    border: 1px solid var(--lux-border);
+    margin-bottom: 8px;
+
+    .setting-icon {
+      font-size: 20px;
+      color: var(--lux-ink);
+      margin-right: 12px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      color: var(--lux-ink);
+    }
+
+    p {
+      font-size: 12px;
+      color: var(--lux-ink-light);
+      margin: 2px 0 0;
+    }
+
+    .arrow-icon {
+      font-size: 16px;
+      color: var(--lux-border-dark);
+    }
+  }
+}
+
+.logout-section {
+  margin-top: 24px;
+
+  .logout-item {
+    --background: var(--lux-parchment-dark);
+    --border-radius: 4px;
+    --padding-start: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--lux-accent-rose);
+
+    .logout-icon {
+      font-size: 20px;
+      color: var(--lux-accent-rose);
+      margin-right: 12px;
+    }
+  }
+}
+
+.footer-branch {
+  display: block;
+  width: 120px;
+  margin: 0 auto 8px;
+  opacity: 0.35;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 24px 0 16px;
+
+  p {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: var(--lux-ink-light);
+    margin: 0;
+  }
+
+  .version {
+    font-size: 12px;
+    color: var(--lux-border-dark);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+}

@@ -1,0 +1,54 @@
+<ion-content class="login-content">
+  <div class="login-container">
+    <div class="logo-section">
+      <div class="logo-circle">
+        <ion-icon name="flower-outline"></ion-icon>
+      </div>
+      <h1>Meadowcraft</h1>
+      <p>Self Care & Beauty</p>
+    </div>
+
+    <div class="form-section">
+      <div class="input-group">
+        <ion-input
+          label="Email"
+          labelPlacement="floating"
+          fill="outline"
+          type="email"
+          [(ngModel)]="email"
+          placeholder="your@email.com"
+          class="custom-input"
+        >
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+        </ion-input>
+      </div>
+
+      <div class="input-group">
+        <ion-input
+          label="Password"
+          labelPlacement="floating"
+          fill="outline"
+          type="password"
+          [(ngModel)]="password"
+          placeholder="Enter password"
+          class="custom-input"
+        >
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        </ion-input>
+      </div>
+
+      <ion-button expand="block" class="login-btn" (click)="onLogin()">
+        Sign In
+      </ion-button>
+
+      <ion-button expand="block" fill="clear" class="skip-btn" (click)="skipLogin()">
+        Continue as Guest
+      </ion-button>
+
+      <div class="signup-link">
+        <span>Don't have an account? </span>
+        <a (click)="goToSignup()">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</ion-content>
