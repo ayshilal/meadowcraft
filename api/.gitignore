@@ -1,0 +1,15 @@
+## .NET
+bin/
+obj/
+publish/
+deploy.zip
+
+## User secrets
+appsettings.json
+appsettings.Development.json
+!appsettings.Template.json
+
+## IDE
+.vs/
+*.user
+*.suo

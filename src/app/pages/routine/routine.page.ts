@@ -143,6 +143,7 @@ export class RoutinePage implements OnInit {
   }
 
   loadSteps() {
+    this.routineService.loadRoutine(this.routineType as 'Morning' | 'Evening');
     if (this.routineType === 'Morning') {
       this.routineService.morningRoutine$.subscribe(
         (steps) => {
@@ -353,7 +354,7 @@ export class RoutinePage implements OnInit {
 
     if (this.aiChatService.isConfigured()) {
       this.aiChatService
-        .sendMessage(message, this.steps, this.routineType)
+        .sendMessage(message, this.steps, this.routineType, this.products)
         .subscribe({
           next: (response) => {
             this.chatMessages.push(response);

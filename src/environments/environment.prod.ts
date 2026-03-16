@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  anthropicApiKey: '',
+  apiUrl: 'https://selfcare-api-meadowcraft.azurewebsites.net/api',
 };

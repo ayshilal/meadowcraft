@@ -8,124 +8,30 @@ import { Routine, RoutineStep } from '../models/routine.model';
   providedIn: 'root',
 })
 export class RoutineService {
-  private morningRoutineSubject = new BehaviorSubject<RoutineStep[]>([
-    {
-      id: 1,
-      productId: 1,
-      order: 1,
-      notes: 'Massage gently for 60 seconds',
-      product: {
-        id: 1,
-        name: 'Gentle Foaming Cleanser',
-        brand: 'CeraVe',
-        category: 'Cleanser',
-      },
-    },
-    {
-      id: 2,
-      productId: 5,
-      order: 2,
-      notes: 'Apply with cotton pad',
-      product: {
-        id: 5,
-        name: 'Rose Water Toner',
-        brand: 'Thayers',
-        category: 'Toner',
-      },
-    },
-    {
-      id: 3,
-      productId: 2,
-      order: 3,
-      notes: 'Pat into damp skin',
-      product: {
-        id: 2,
-        name: 'Hyaluronic Acid Serum',
-        brand: 'The Ordinary',
-        category: 'Serum',
-      },
-    },
-    {
-      id: 4,
-      productId: 3,
-      order: 4,
-      notes: 'Apply evenly',
-      product: {
-        id: 3,
-        name: 'Moisturizing Cream',
-        brand: 'La Roche-Posay',
-        category: 'Moisturizer',
-      },
-    },
-    {
-      id: 5,
-      productId: 4,
-      order: 5,
-      notes: 'Last step, always!',
-      product: {
-        id: 4,
-        name: 'UV Expert SPF 50',
-        brand: 'Lancôme',
-        category: 'SPF',
-      },
-    },
-  ]);
-
-  private eveningRoutineSubject = new BehaviorSubject<RoutineStep[]>([
-    {
-      id: 6,
-      productId: 1,
-      order: 1,
-      notes: 'Double cleanse - second wash',
-      product: {
-        id: 1,
-        name: 'Gentle Foaming Cleanser',
-        brand: 'CeraVe',
-        category: 'Cleanser',
-      },
-    },
-    {
-      id: 7,
-      productId: 5,
-      order: 2,
-      notes: 'Prep skin for treatments',
-      product: {
-        id: 5,
-        name: 'Rose Water Toner',
-        brand: 'Thayers',
-        category: 'Toner',
-      },
-    },
-    {
-      id: 8,
-      productId: 2,
-      order: 3,
-      notes: 'Layer generously at night',
-      product: {
-        id: 2,
-        name: 'Hyaluronic Acid Serum',
-        brand: 'The Ordinary',
-        category: 'Serum',
-      },
-    },
-    {
-      id: 9,
-      productId: 3,
-      order: 4,
-      notes: 'Seal in all the goodness',
-      product: {
-        id: 3,
-        name: 'Moisturizing Cream',
-        brand: 'La Roche-Posay',
-        category: 'Moisturizer',
-      },
-    },
-  ]);
+  private morningRoutineSubject = new BehaviorSubject<RoutineStep[]>([]);
+  private eveningRoutineSubject = new BehaviorSubject<RoutineStep[]>([]);
+  private morningLoaded = false;
+  private eveningLoaded = false;
 
   morningRoutine$ = this.morningRoutineSubject.asObservable();
   eveningRoutine$ = this.eveningRoutineSubject.asObservable();
 
   constructor(private api: ApiService) {}
+
+  loadRoutine(type: 'Morning' | 'Evening'): void {
+    this.api.get<Routine>(`routines?type=${type}`).pipe(
+      catchError(() => of({ id: 0, name: `${type} Routine`, type, steps: [] } as Routine))
+    ).subscribe((routine) => {
+      const steps = (routine.steps || []).sort((a, b) => a.order - b.order);
+      if (type === 'Morning') {
+        this.morningRoutineSubject.next(steps);
+        this.morningLoaded = true;
+      } else {
+        this.eveningRoutineSubject.next(steps);
+        this.eveningLoaded = true;
+      }
+    });
+  }
 
   getRoutine(type: 'Morning' | 'Evening'): Observable<Routine> {
     return this.api.get<Routine>(`routines?type=${type}`).pipe(

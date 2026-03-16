@@ -55,7 +55,13 @@ export class ProductService {
   ];
 
   constructor(private api: ApiService) {
-    this.productsSubject.next(this.mockProducts);
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    this.api.get<Product[]>('products').pipe(
+      catchError(() => of(this.mockProducts))
+    ).subscribe((products) => this.productsSubject.next(products));
   }
 
   getProducts(): Observable<Product[]> {
