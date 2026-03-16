@@ -81,6 +81,11 @@ dotnet run
 
 API runs at `https://localhost:5000`.
 
+## Live URLs
+
+- **Frontend:** https://jolly-forest-0ed987310.4.azurestaticapps.net
+- **API:** https://selfcare-api-meadowcraft.azurewebsites.net
+
 ## Deployment
 
 ### API (Azure App Service)
@@ -90,7 +95,7 @@ cd api/SelfCare.Api
 dotnet publish -c Release -o ./publish
 # Windows:
 powershell -Command "Compress-Archive -Path './publish/*' -DestinationPath './deploy.zip' -Force"
-az webapp deploy --name <app-name> --resource-group <rg-name> --src-path ./deploy.zip --type zip
+az webapp deploy --name selfcare-api-meadowcraft --resource-group rg-skincare-advisor --src-path ./deploy.zip --type zip
 ```
 
 ### Frontend (Azure Static Web Apps)
