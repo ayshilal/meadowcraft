@@ -374,7 +374,7 @@
 .discuss-bar {
   border-radius: 10px;
   overflow: hidden;
-  background: linear-gradient(135deg, #2c3e50, #3d5a6e);
+  background: linear-gradient(135deg, #2c3e50, #3d5a6e) !important;
   margin-bottom: 16px;
   cursor: pointer;
   transition: transform 0.2s;
@@ -397,6 +397,7 @@
     height: 32px;
     object-fit: contain;
     flex-shrink: 0;
+    filter: brightness(0) invert(1);
   }
 
   .discuss-bar-text {
