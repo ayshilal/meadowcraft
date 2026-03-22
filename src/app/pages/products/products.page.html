@@ -86,6 +86,12 @@
     </ion-fab-button>
   </ion-fab>
 
+  <ion-fab slot="fixed" vertical="bottom" horizontal="start" class="scan-fab-container">
+    <ion-fab-button (click)="openScanner()" class="scan-fab">
+      <ion-icon name="barcode-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <!-- Product Detail Modal -->
   <ion-modal [isOpen]="isDetailOpen" (didDismiss)="closeProductDetail()" class="product-detail-modal">
     <ng-template>
@@ -139,6 +145,25 @@
           <div class="detail-section" *ngIf="productRoutines.length === 0">
             <h4>Used In</h4>
             <p class="not-used">Not added to any routine yet</p>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Barcode Scanner Modal -->
+  <ion-modal [isOpen]="isScannerOpen" (didDismiss)="closeScanner()" class="scanner-modal">
+    <ng-template>
+      <ion-content class="scanner-content">
+        <app-barcode-scanner
+          (barcodeScanned)="onBarcodeScanned($event)"
+          (cancelled)="closeScanner()"
+        ></app-barcode-scanner>
+
+        <div class="lookup-overlay" *ngIf="isLookingUp">
+          <div class="lookup-spinner">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Looking up product...</p>
           </div>
         </div>
       </ion-content>

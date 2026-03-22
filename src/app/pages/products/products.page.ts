@@ -24,6 +24,7 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
+  IonSpinner,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -35,14 +36,18 @@ import {
   cubeOutline,
   sunnyOutline,
   moonOutline,
+  barcodeOutline,
 } from 'ionicons/icons';
 import { ProductService } from '../../services/product.service';
 import { RoutineService } from '../../services/routine.service';
+import { BarcodeService, BarcodeResult } from '../../services/barcode.service';
 import {
   Product,
+  ProductCategory,
   PRODUCT_CATEGORIES,
 } from '../../models/product.model';
 import { RoutineStep } from '../../models/routine.model';
+import { BarcodeScannerComponent } from '../../components/barcode-scanner/barcode-scanner.component';
 
 @Component({
   selector: 'app-products',
@@ -73,6 +78,8 @@ import { RoutineStep } from '../../models/routine.model';
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
+    IonSpinner,
+    BarcodeScannerComponent,
   ],
 })
 export class ProductsPage implements OnInit {
@@ -83,6 +90,8 @@ export class ProductsPage implements OnInit {
   categories: string[] = ['All', ...PRODUCT_CATEGORIES];
   isModalOpen = false;
   isDetailOpen = false;
+  isScannerOpen = false;
+  isLookingUp = false;
   selectedProduct: Product | null = null;
   productRoutines: string[] = [];
 
@@ -103,9 +112,10 @@ export class ProductsPage implements OnInit {
   constructor(
     private productService: ProductService,
     private routineService: RoutineService,
+    private barcodeService: BarcodeService,
     private toastController: ToastController
   ) {
-    addIcons({ addOutline, closeOutline, trashOutline, flaskOutline, cubeOutline, sunnyOutline, moonOutline });
+    addIcons({ addOutline, closeOutline, trashOutline, flaskOutline, cubeOutline, sunnyOutline, moonOutline, barcodeOutline });
   }
 
   ngOnInit() {
@@ -272,5 +282,75 @@ export class ProductsPage implements OnInit {
 
   closeProductDetail() {
     this.isDetailOpen = false;
+  }
+
+  openScanner() {
+    this.isScannerOpen = true;
+  }
+
+  closeScanner() {
+    this.isScannerOpen = false;
+  }
+
+  async onBarcodeScanned(barcode: string) {
+    this.isLookingUp = true;
+    this.barcodeService.lookup(barcode).subscribe({
+      next: async (result: BarcodeResult) => {
+        this.isLookingUp = false;
+        this.isScannerOpen = false;
+
+        // Map categories string to a ProductCategory
+        const category = this.mapCategory(result.categories);
+
+        this.newProduct = {
+          name: result.name || '',
+          brand: result.brand || '',
+          category,
+          description: result.ingredients || '',
+          notes: `Barcode: ${result.barcode}`,
+          imageUrl: result.imageUrl || '',
+        };
+
+        this.isModalOpen = true;
+
+        const toast = await this.toastController.create({
+          message: `Found: ${result.name || 'Unknown product'}`,
+          duration: 2000,
+          color: 'success',
+          position: 'top',
+        });
+        await toast.present();
+      },
+      error: async () => {
+        this.isLookingUp = false;
+        const toast = await this.toastController.create({
+          message: `Product not found for barcode: ${barcode}`,
+          duration: 3000,
+          color: 'warning',
+          position: 'top',
+        });
+        await toast.present();
+      },
+    });
+  }
+
+  private mapCategory(categories: string | null): ProductCategory {
+    if (!categories) return 'Other';
+    const lower = categories.toLowerCase();
+    const mapping: [string[], ProductCategory][] = [
+      [['cleanser', 'cleansing', 'wash', 'soap'], 'Cleanser'],
+      [['toner', 'toning', 'lotion'], 'Toner'],
+      [['serum', 'essence', 'ampoule'], 'Serum'],
+      [['moisturizer', 'moisturiser', 'cream', 'hydrat'], 'Moisturizer'],
+      [['sunscreen', 'spf', 'sun protection', 'solar'], 'SPF'],
+      [['mask', 'masque'], 'Mask'],
+      [['exfoliant', 'exfoliat', 'scrub', 'peel'], 'Exfoliant'],
+      [['eye cream', 'eye care', 'contour des yeux'], 'Eye Cream'],
+      [['oil', 'huile'], 'Oil'],
+    ];
+    for (const [keywords, cat] of mapping) {
+      if (keywords.some((k) => lower.includes(k))) return cat;
+    }
+    return 'Other';
   }
 }

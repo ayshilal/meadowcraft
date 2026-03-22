@@ -1,0 +1,69 @@
+<div class="scanner-container">
+  <div class="scanner-header">
+    <h2>Scan Barcode</h2>
+    <ion-button fill="clear" (click)="cancel()" class="close-btn">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Camera View -->
+  <div class="camera-section" *ngIf="isScanning">
+    <div class="video-wrapper">
+      <video #videoElement autoplay playsinline muted></video>
+      <canvas #canvasElement style="display: none;"></canvas>
+      <div class="scan-overlay">
+        <div class="scan-frame"></div>
+      </div>
+    </div>
+    <ion-button expand="block" fill="outline" (click)="stopScanning()" class="stop-btn">
+      <ion-icon name="stop-outline" slot="start"></ion-icon>
+      Stop Camera
+    </ion-button>
+  </div>
+
+  <!-- Start Camera Button -->
+  <div class="start-section" *ngIf="!isScanning">
+    <div class="camera-placeholder" *ngIf="isCameraSupported && isBarcodeDetectorSupported">
+      <ion-icon name="camera-outline"></ion-icon>
+      <p>Point your camera at a product barcode</p>
+      <ion-button expand="block" (click)="startScanning()" class="scan-btn">
+        <ion-icon name="camera-outline" slot="start"></ion-icon>
+        Open Camera
+      </ion-button>
+    </div>
+
+    <div class="unsupported-notice" *ngIf="!isBarcodeDetectorSupported">
+      <p>Camera scanning requires Chrome or Edge browser.</p>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-message" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Manual Entry Divider -->
+  <div class="divider">
+    <span>or enter manually</span>
+  </div>
+
+  <!-- Manual Barcode Entry -->
+  <div class="manual-section">
+    <div class="manual-input-row">
+      <ion-input
+        label="Barcode Number"
+        labelPlacement="floating"
+        fill="outline"
+        [(ngModel)]="manualBarcode"
+        placeholder="e.g. 3337875545860"
+        class="barcode-input"
+        type="text"
+        inputmode="numeric"
+        (keyup.enter)="submitManual()"
+      ></ion-input>
+      <ion-button (click)="submitManual()" [disabled]="!manualBarcode.trim()" class="lookup-btn">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+</div>
