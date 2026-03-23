@@ -27,36 +27,30 @@
   margin-bottom: 16px;
 }
 
-.video-wrapper {
-  position: relative;
+.reader-box {
   width: 100%;
   border-radius: 8px;
   overflow: hidden;
-  background: #000;
   margin-bottom: 12px;
 
+  // Override html5-qrcode default styles
   video {
-    width: 100%;
-    display: block;
-  }
-
-  .scan-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .scan-frame {
-    width: 70%;
-    height: 40%;
-    border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 8px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Hide the built-in file scan button from html5-qrcode
+:host ::ng-deep {
+  #barcode-reader {
+    border: none !important;
+
+    #barcode-reader__dashboard {
+      display: none !important;
+    }
+
+    video {
+      border-radius: 8px;
+    }
   }
 }
 
@@ -71,33 +65,6 @@
   font-weight: 600;
 }
 
-// Start section
-.start-section {
-  margin-bottom: 16px;
-}
-
-.camera-placeholder {
-  text-align: center;
-  padding: 32px 20px;
-  background: var(--lux-parchment-dark);
-  border: 1px dashed var(--lux-border-dark);
-  border-radius: 8px;
-
-  ion-icon {
-    font-size: 48px;
-    color: var(--lux-ink-light);
-    display: block;
-    margin: 0 auto 12px;
-  }
-
-  p {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 14px;
-    color: var(--lux-ink-light);
-    margin: 0 0 16px;
-  }
-}
-
 .scan-btn {
   --background: var(--lux-ink);
   --color: var(--lux-parchment);
@@ -106,21 +73,7 @@
   letter-spacing: 1.5px;
   font-size: 12px;
   text-transform: uppercase;
-}
-
-.unsupported-notice {
-  text-align: center;
-  padding: 20px;
-  background: var(--lux-parchment-dark);
-  border: 1px solid var(--lux-border);
-  border-radius: 8px;
-
-  p {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 14px;
-    color: var(--lux-ink-light);
-    margin: 0;
-  }
+  margin-top: 12px;
 }
 
 .error-message {

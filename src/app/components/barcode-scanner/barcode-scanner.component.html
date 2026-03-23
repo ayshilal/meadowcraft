@@ -6,35 +6,19 @@
     </ion-button>
   </div>
 
-  <!-- Camera View -->
-  <div class="camera-section" *ngIf="isScanning">
-    <div class="video-wrapper">
-      <video #videoElement autoplay playsinline muted></video>
-      <canvas #canvasElement style="display: none;"></canvas>
-      <div class="scan-overlay">
-        <div class="scan-frame"></div>
-      </div>
-    </div>
-    <ion-button expand="block" fill="outline" (click)="stopScanning()" class="stop-btn">
+  <!-- Camera View (html5-qrcode renders here) -->
+  <div class="camera-section">
+    <div id="barcode-reader" class="reader-box"></div>
+
+    <ion-button *ngIf="isScanning" expand="block" fill="outline" (click)="stopScanning()" class="stop-btn">
       <ion-icon name="stop-outline" slot="start"></ion-icon>
       Stop Camera
     </ion-button>
-  </div>
 
-  <!-- Start Camera Button -->
-  <div class="start-section" *ngIf="!isScanning">
-    <div class="camera-placeholder" *ngIf="isCameraSupported && isBarcodeDetectorSupported">
-      <ion-icon name="camera-outline"></ion-icon>
-      <p>Point your camera at a product barcode</p>
-      <ion-button expand="block" (click)="startScanning()" class="scan-btn">
-        <ion-icon name="camera-outline" slot="start"></ion-icon>
-        Open Camera
-      </ion-button>
-    </div>
-
-    <div class="unsupported-notice" *ngIf="!isBarcodeDetectorSupported">
-      <p>Camera scanning requires Chrome or Edge browser.</p>
-    </div>
+    <ion-button *ngIf="!isScanning && !errorMessage" expand="block" (click)="startScanning()" class="scan-btn">
+      <ion-icon name="camera-outline" slot="start"></ion-icon>
+      Open Camera
+    </ion-button>
   </div>
 
   <!-- Error -->

@@ -1,10 +1,9 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   OnDestroy,
   Output,
-  ViewChild,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +11,6 @@ import {
   IonButton,
   IonIcon,
   IonInput,
-  IonSpinner,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -21,14 +19,7 @@ import {
   searchOutline,
   stopOutline,
 } from 'ionicons/icons';
-
-declare global {
-  interface Window {
-    BarcodeDetector?: new (options?: { formats: string[] }) => {
-      detect(source: ImageBitmapSource): Promise<{ rawValue: string }[]>;
-    };
-  }
-}
+import { Html5Qrcode } from 'html5-qrcode';
 
 @Component({
   selector: 'app-barcode-scanner',
@@ -40,30 +31,26 @@ declare global {
     IonButton,
     IonIcon,
     IonInput,
-    IonSpinner,
   ],
 })
-export class BarcodeScannerComponent implements OnDestroy {
+export class BarcodeScannerComponent implements AfterViewInit, OnDestroy {
   @Output() barcodeScanned = new EventEmitter<string>();
   @Output() cancelled = new EventEmitter<void>();
 
-  @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
-  @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
-
   manualBarcode = '';
   isScanning = false;
-  isCameraSupported = false;
-  isBarcodeDetectorSupported = false;
   errorMessage = '';
 
-  private stream: MediaStream | null = null;
-  private animationFrameId: number | null = null;
-  private detector: InstanceType<NonNullable<Window['BarcodeDetector']>> | null = null;
+  private scanner: Html5Qrcode | null = null;
+  private readonly scannerId = 'barcode-reader';
 
   constructor() {
     addIcons({ cameraOutline, closeOutline, searchOutline, stopOutline });
-    this.isCameraSupported = !!navigator.mediaDevices?.getUserMedia;
-    this.isBarcodeDetectorSupported = !!window.BarcodeDetector;
+  }
+
+  ngAfterViewInit() {
+    // Auto-start camera when component opens
+    setTimeout(() => this.startScanning(), 300);
   }
 
   ngOnDestroy() {
@@ -73,87 +60,52 @@ export class BarcodeScannerComponent implements OnDestroy {
   async startScanning() {
     this.errorMessage = '';
 
-    if (!this.isBarcodeDetectorSupported) {
-      this.errorMessage =
-        'BarcodeDetector API not supported in this browser. Use manual entry or try Chrome/Edge.';
-      return;
-    }
-
     try {
-      this.detector = new window.BarcodeDetector!({
-        formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'],
-      });
+      this.scanner = new Html5Qrcode(this.scannerId);
 
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-      });
+      await this.scanner.start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 150 },
+          aspectRatio: 1.5,
+        },
+        (decodedText) => {
+          // Success — barcode found
+          this.stopScanning();
+          this.barcodeScanned.emit(decodedText);
+        },
+        () => {
+          // No barcode detected in this frame — ignore
+        }
+      );
 
       this.isScanning = true;
-
-      // Wait for view to update so video element exists
-      setTimeout(() => {
-        const video = this.videoElement?.nativeElement;
-        if (video) {
-          video.srcObject = this.stream;
-          video.play();
-          this.scanFrame();
-        }
-      }, 100);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      this.errorMessage = `Camera error: ${message}`;
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes('NotAllowedError') || message.includes('Permission')) {
+        this.errorMessage = 'Camera permission denied. Please allow camera access and try again.';
+      } else if (message.includes('NotFoundError') || message.includes('no camera')) {
+        this.errorMessage = 'No camera found on this device.';
+      } else {
+        this.errorMessage = `Camera error: ${message}`;
+      }
       this.isScanning = false;
     }
   }
 
-  stopScanning() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
-    if (this.stream) {
-      this.stream.getTracks().forEach((t) => t.stop());
-      this.stream = null;
+  async stopScanning() {
+    if (this.scanner) {
+      try {
+        if (this.isScanning) {
+          await this.scanner.stop();
+        }
+      } catch {
+        // Ignore stop errors
+      }
+      this.scanner = null;
     }
     this.isScanning = false;
-  }
-
-  private scanFrame() {
-    if (!this.isScanning || !this.detector) return;
-
-    const video = this.videoElement?.nativeElement;
-    if (!video || video.readyState < video.HAVE_ENOUGH_DATA) {
-      this.animationFrameId = requestAnimationFrame(() => this.scanFrame());
-      return;
-    }
-
-    const canvas = this.canvasElement?.nativeElement;
-    if (!canvas) {
-      this.animationFrameId = requestAnimationFrame(() => this.scanFrame());
-      return;
-    }
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(video, 0, 0);
-    }
-
-    this.detector
-      .detect(canvas)
-      .then((barcodes) => {
-        if (barcodes.length > 0) {
-          const code = barcodes[0].rawValue;
-          this.stopScanning();
-          this.barcodeScanned.emit(code);
-        } else {
-          this.animationFrameId = requestAnimationFrame(() => this.scanFrame());
-        }
-      })
-      .catch(() => {
-        this.animationFrameId = requestAnimationFrame(() => this.scanFrame());
-      });
   }
 
   submitManual() {
