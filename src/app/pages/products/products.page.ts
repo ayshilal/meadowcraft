@@ -42,7 +42,7 @@ import {
 import { ProductService } from '../../services/product.service';
 import { RoutineService } from '../../services/routine.service';
 import { BarcodeService, BarcodeResult } from '../../services/barcode.service';
-import { VisionService, ProductIdentification } from '../../services/vision.service';
+import { ProductIdentification } from '../../services/vision.service';
 import {
   Product,
   ProductCategory,
@@ -50,6 +50,7 @@ import {
 } from '../../models/product.model';
 import { RoutineStep } from '../../models/routine.model';
 import { BarcodeScannerComponent } from '../../components/barcode-scanner/barcode-scanner.component';
+import { ProductScannerComponent } from '../../components/product-scanner/product-scanner.component';
 
 @Component({
   selector: 'app-products',
@@ -82,6 +83,7 @@ import { BarcodeScannerComponent } from '../../components/barcode-scanner/barcod
     IonItemOption,
     IonSpinner,
     BarcodeScannerComponent,
+    ProductScannerComponent,
   ],
 })
 export class ProductsPage implements OnInit {
@@ -111,13 +113,12 @@ export class ProductsPage implements OnInit {
 
   productCategories = PRODUCT_CATEGORIES;
 
-  isIdentifying = false;
+  isProductScannerOpen = false;
 
   constructor(
     private productService: ProductService,
     private routineService: RoutineService,
     private barcodeService: BarcodeService,
-    private visionService: VisionService,
     private toastController: ToastController
   ) {
     addIcons({ addOutline, closeOutline, trashOutline, flaskOutline, cubeOutline, sunnyOutline, moonOutline, barcodeOutline, cameraOutline });
@@ -339,62 +340,50 @@ export class ProductsPage implements OnInit {
     });
   }
 
-  async capturePhoto() {
-    // Create a hidden file input to capture photo
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment'; // Use rear camera on mobile
+  openProductScanner() {
+    this.isProductScannerOpen = true;
+  }
 
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
+  closeProductScanner() {
+    this.isProductScannerOpen = false;
+  }
 
-      this.isIdentifying = true;
+  async onProductIdentified(result: ProductIdentification) {
+    this.isProductScannerOpen = false;
 
-      // Convert to base64
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1]; // Remove data:image/...;base64, prefix
-        this.visionService.identifyProduct(base64).subscribe({
-          next: async (result: ProductIdentification) => {
-            this.isIdentifying = false;
-
-            this.newProduct = {
-              name: result.name || '',
-              brand: result.brand || '',
-              category: (result.category as ProductCategory) || 'Other',
-              description: result.ingredients?.join(', ') || result.description || '',
-              notes: `AI identified (confidence: ${Math.round(result.confidence * 100)}%)`,
-              imageUrl: '',
-            };
-
-            this.isModalOpen = true;
-
-            const toast = await this.toastController.create({
-              message: `Identified: ${result.name || 'Unknown product'} (${Math.round(result.confidence * 100)}%)`,
-              duration: 3000,
-              color: 'success',
-              position: 'top',
-            });
-            await toast.present();
-          },
-          error: async () => {
-            this.isIdentifying = false;
-            const toast = await this.toastController.create({
-              message: 'Could not identify the product. Try a clearer photo or add manually.',
-              duration: 3000,
-              color: 'warning',
-              position: 'top',
-            });
-            await toast.present();
-          },
-        });
-      };
-      reader.readAsDataURL(file);
+    const product: Product = {
+      name: result.name || '',
+      brand: result.brand || '',
+      category: (result.category as ProductCategory) || 'Other',
+      description: result.ingredients?.join(', ') || result.description || '',
+      notes: `AI identified (confidence: ${Math.round(result.confidence * 100)}%)`,
+      imageUrl: '',
     };
 
-    input.click();
+    if (result.confidence >= 0.7) {
+      // High confidence — auto-save
+      this.productService.addProduct(product).subscribe(async () => {
+        const toast = await this.toastController.create({
+          message: `Added: ${product.name}`,
+          duration: 2000,
+          color: 'success',
+          position: 'top',
+        });
+        await toast.present();
+      });
+    } else {
+      // Low confidence — open form for review
+      this.newProduct = product;
+      this.isModalOpen = true;
+
+      const toast = await this.toastController.create({
+        message: `Low confidence — please review and edit`,
+        duration: 2000,
+        color: 'warning',
+        position: 'top',
+      });
+      await toast.present();
+    }
   }
 
   private mapCategory(categories: string | null): ProductCategory {

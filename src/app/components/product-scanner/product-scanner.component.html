@@ -1,0 +1,63 @@
+<div class="scanner-container">
+  <div class="scanner-header">
+    <h2>Identify Product</h2>
+    <ion-button fill="clear" (click)="cancel()" class="close-btn">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Live Viewfinder -->
+  <div class="viewfinder" [class.analyzing]="state === 'analyzing'" [class.identified]="state === 'identified'">
+    <video #videoElement autoplay playsinline muted></video>
+    <canvas #canvasElement style="display: none;"></canvas>
+
+    <!-- Scanning overlay -->
+    <div class="scan-overlay" *ngIf="state === 'scanning' || state === 'analyzing'">
+      <div class="scan-frame" [class.pulse]="state === 'analyzing'"></div>
+      <p class="scan-label">{{ state === 'analyzing' ? 'Analyzing...' : 'Point at a product' }}</p>
+    </div>
+
+    <!-- Checkmark overlay -->
+    <div class="success-overlay" *ngIf="state === 'identified' && identifiedProduct">
+      <div class="checkmark-circle">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <p class="identified-name">{{ identifiedProduct.name }}</p>
+      <p class="identified-brand">{{ identifiedProduct.brand }}</p>
+    </div>
+
+    <!-- Failed overlay -->
+    <div class="failed-overlay" *ngIf="state === 'failed'">
+      <ion-icon name="alert-circle-outline" class="failed-icon"></ion-icon>
+      <p class="failed-text">Could not identify product</p>
+      <div class="failed-actions">
+        <ion-button fill="outline" size="small" (click)="retryScanning()" class="retry-btn">
+          Try Again
+        </ion-button>
+        <ion-button *ngIf="identifiedProduct" fill="solid" size="small" (click)="useResult()" class="use-btn">
+          Use Best Guess
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Starting spinner -->
+    <div class="starting-overlay" *ngIf="state === 'starting'">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Starting camera...</p>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-section" *ngIf="state === 'error'">
+    <p class="error-text">{{ errorMessage }}</p>
+    <ion-button expand="block" (click)="startCamera()" class="retry-full-btn">
+      Try Again
+    </ion-button>
+  </div>
+
+  <!-- Attempt counter -->
+  <div class="attempt-info" *ngIf="state === 'scanning' || state === 'analyzing'">
+    <span *ngIf="attemptCount > 0">Attempt {{ attemptCount + 1 }} of {{ MAX_ATTEMPTS }}</span>
+    <span *ngIf="attemptCount === 0">AI is looking...</span>
+  </div>
+</div>
