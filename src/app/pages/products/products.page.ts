@@ -37,10 +37,12 @@ import {
   sunnyOutline,
   moonOutline,
   barcodeOutline,
+  cameraOutline,
 } from 'ionicons/icons';
 import { ProductService } from '../../services/product.service';
 import { RoutineService } from '../../services/routine.service';
 import { BarcodeService, BarcodeResult } from '../../services/barcode.service';
+import { VisionService, ProductIdentification } from '../../services/vision.service';
 import {
   Product,
   ProductCategory,
@@ -109,13 +111,16 @@ export class ProductsPage implements OnInit {
 
   productCategories = PRODUCT_CATEGORIES;
 
+  isIdentifying = false;
+
   constructor(
     private productService: ProductService,
     private routineService: RoutineService,
     private barcodeService: BarcodeService,
+    private visionService: VisionService,
     private toastController: ToastController
   ) {
-    addIcons({ addOutline, closeOutline, trashOutline, flaskOutline, cubeOutline, sunnyOutline, moonOutline, barcodeOutline });
+    addIcons({ addOutline, closeOutline, trashOutline, flaskOutline, cubeOutline, sunnyOutline, moonOutline, barcodeOutline, cameraOutline });
   }
 
   ngOnInit() {
@@ -332,6 +337,64 @@ export class ProductsPage implements OnInit {
         await toast.present();
       },
     });
+  }
+
+  async capturePhoto() {
+    // Create a hidden file input to capture photo
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // Use rear camera on mobile
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      this.isIdentifying = true;
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1]; // Remove data:image/...;base64, prefix
+        this.visionService.identifyProduct(base64).subscribe({
+          next: async (result: ProductIdentification) => {
+            this.isIdentifying = false;
+
+            this.newProduct = {
+              name: result.name || '',
+              brand: result.brand || '',
+              category: (result.category as ProductCategory) || 'Other',
+              description: result.ingredients?.join(', ') || result.description || '',
+              notes: `AI identified (confidence: ${Math.round(result.confidence * 100)}%)`,
+              imageUrl: '',
+            };
+
+            this.isModalOpen = true;
+
+            const toast = await this.toastController.create({
+              message: `Identified: ${result.name || 'Unknown product'} (${Math.round(result.confidence * 100)}%)`,
+              duration: 3000,
+              color: 'success',
+              position: 'top',
+            });
+            await toast.present();
+          },
+          error: async () => {
+            this.isIdentifying = false;
+            const toast = await this.toastController.create({
+              message: 'Could not identify the product. Try a clearer photo or add manually.',
+              duration: 3000,
+              color: 'warning',
+              position: 'top',
+            });
+            await toast.present();
+          },
+        });
+      };
+      reader.readAsDataURL(file);
+    };
+
+    input.click();
   }
 
   private mapCategory(categories: string | null): ProductCategory {

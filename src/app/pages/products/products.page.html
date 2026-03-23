@@ -92,6 +92,20 @@
     </ion-fab-button>
   </ion-fab>
 
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="photo-fab-container">
+    <ion-fab-button (click)="capturePhoto()" class="photo-fab" [disabled]="isIdentifying">
+      <ion-icon name="camera-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- AI Identifying Overlay -->
+  <div class="identify-overlay" *ngIf="isIdentifying">
+    <div class="identify-spinner">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>AI identifying product...</p>
+    </div>
+  </div>
+
   <!-- Product Detail Modal -->
   <ion-modal [isOpen]="isDetailOpen" (didDismiss)="closeProductDetail()" class="product-detail-modal">
     <ng-template>

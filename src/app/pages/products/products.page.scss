@@ -459,6 +459,52 @@
   --box-shadow: 0 4px 16px rgba(44, 44, 44, 0.3);
 }
 
+// --- Photo FAB ---
+.photo-fab-container {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.photo-fab {
+  --background: var(--lux-ink);
+  --color: var(--lux-parchment);
+  --box-shadow: 0 4px 16px rgba(44, 44, 44, 0.3);
+}
+
+// --- AI Identify Overlay ---
+.identify-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  .identify-spinner {
+    text-align: center;
+
+    ion-spinner {
+      --color: var(--lux-ink);
+      width: 48px;
+      height: 48px;
+    }
+
+    p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      color: var(--lux-ink);
+      margin-top: 16px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+}
+
 // --- Scanner Modal ---
 .scanner-content {
   --background: var(--lux-parchment);
