@@ -192,10 +192,10 @@
 // --- Desktop / Web View ---
 @media (min-width: 768px) {
   .welcome-section {
-    padding: 20px 0 12px;
+    padding: 16px 0 8px;
 
     .greeting {
-      font-size: 38px;
+      font-size: 36px;
     }
   }
 
@@ -203,13 +203,20 @@
     max-width: 960px;
     margin: 0 auto;
 
+    ion-row {
+      display: flex;
+      flex-wrap: nowrap;
+    }
+
     ion-col {
-      padding: 8px;
+      flex: 1 1 25%;
+      max-width: 25%;
+      padding: 6px;
     }
   }
 
   .watercolor-card {
-    padding-bottom: 110%; // shorter cards for 4-column layout
+    padding-bottom: 90%;
     border-radius: 14px;
 
     &:hover {
@@ -218,26 +225,26 @@
     }
 
     .label-inner {
-      padding: 10px 14px;
+      padding: 8px 12px;
       min-width: 75%;
     }
 
     .label-title {
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .label-count {
-      font-size: 13px;
+      font-size: 12px;
     }
   }
 
   .tip-section {
     max-width: 960px;
-    margin: 14px auto 0;
+    margin: 10px auto 0;
   }
 
   .tip-watercolor {
-    padding-bottom: 22%;
+    padding-bottom: 18%;
     border-radius: 14px;
 
     &:hover {
@@ -248,7 +255,12 @@
 
   .quick-actions {
     max-width: 960px;
-    margin: 16px auto 0;
+    margin: 12px auto 0;
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
   }
 }
 
