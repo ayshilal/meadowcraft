@@ -60,18 +60,30 @@ export class ProductService {
 
   loadProducts(): void {
     this.api.get<Product[]>('products').pipe(
+      tap((products) => products.forEach(p => this.hydrateRating(p))),
       catchError(() => of(this.mockProducts))
     ).subscribe((products) => this.productsSubject.next(products));
   }
 
   getProducts(): Observable<Product[]> {
     return this.api.get<Product[]>('products').pipe(
-      tap((products) => this.productsSubject.next(products)),
+      tap((products) => {
+        products.forEach(p => this.hydrateRating(p));
+        this.productsSubject.next(products);
+      }),
       catchError(() => {
         this.productsSubject.next(this.mockProducts);
         return of(this.mockProducts);
       })
     );
+  }
+
+  private hydrateRating(product: Product): void {
+    if (product.apothecaryRatingJson && !product.apothecaryRating) {
+      try {
+        product.apothecaryRating = JSON.parse(product.apothecaryRatingJson);
+      } catch { /* ignore parse errors */ }
+    }
   }
 
   getProduct(id: number): Observable<Product> {

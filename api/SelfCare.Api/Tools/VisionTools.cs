@@ -22,4 +22,4 @@ public class VisionTools(IVisionService visionService)
         var result = await visionService.AnalyzeIngredientsAsync(ingredientText);
         return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
     }
-}
+} 

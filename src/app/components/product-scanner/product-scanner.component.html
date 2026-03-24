@@ -12,9 +12,23 @@
     <canvas #canvasElement style="display: none;"></canvas>
 
     <!-- Scanning overlay -->
-    <div class="scan-overlay" *ngIf="state === 'scanning' || state === 'analyzing'">
-      <div class="scan-frame" [class.pulse]="state === 'analyzing'"></div>
-      <p class="scan-label">{{ state === 'analyzing' ? 'Analyzing...' : 'Point at a product' }}</p>
+    <div class="scan-overlay" *ngIf="state === 'scanning'">
+      <div class="scan-frame"></div>
+      <p class="scan-label">Point at a product</p>
+    </div>
+
+    <!-- Analyzing / Thinking overlay -->
+    <div class="analyzing-overlay" *ngIf="state === 'analyzing'">
+      <div class="thinking-container">
+        <div class="thinking-brain">
+          <div class="brain-ring"></div>
+          <div class="brain-ring delay-1"></div>
+          <div class="brain-ring delay-2"></div>
+          <ion-spinner name="dots" class="thinking-spinner"></ion-spinner>
+        </div>
+        <p class="thinking-text">AI is thinking{{ analyzingDots }}</p>
+        <p class="thinking-subtext">Identifying your product</p>
+      </div>
     </div>
 
     <!-- Checkmark overlay -->
@@ -24,6 +38,7 @@
       </div>
       <p class="identified-name">{{ identifiedProduct.name }}</p>
       <p class="identified-brand">{{ identifiedProduct.brand }}</p>
+      <p class="saving-text">Saving to your collection...</p>
     </div>
 
     <!-- Failed overlay -->
@@ -56,7 +71,7 @@
   </div>
 
   <!-- Attempt counter -->
-  <div class="attempt-info" *ngIf="state === 'scanning' || state === 'analyzing'">
+  <div class="attempt-info" *ngIf="state === 'scanning'">
     <span *ngIf="attemptCount > 0">Attempt {{ attemptCount + 1 }} of {{ MAX_ATTEMPTS }}</span>
     <span *ngIf="attemptCount === 0">AI is looking...</span>
   </div>

@@ -22,6 +22,14 @@ import {
 } from 'ionicons/icons';
 import { VisionService, ProductIdentification } from '../../services/vision.service';
 
+declare global {
+  interface Window {
+    BarcodeDetector?: new (options?: { formats: string[] }) => {
+      detect(source: ImageBitmapSource): Promise<{ rawValue: string }[]>;
+    };
+  }
+}
+
 type ScanState = 'starting' | 'scanning' | 'analyzing' | 'identified' | 'failed' | 'error';
 
 @Component({
@@ -44,14 +52,18 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
 
   state: ScanState = 'starting';
   identifiedProduct: ProductIdentification | null = null;
+  capturedImageUrl = '';
+  analyzingDots = '';
   errorMessage = '';
   attemptCount = 0;
 
   private stream: MediaStream | null = null;
   private scanInterval: ReturnType<typeof setInterval> | null = null;
+  private dotsInterval: ReturnType<typeof setInterval> | null = null;
   readonly MAX_ATTEMPTS = 3;
   private readonly SCAN_INTERVAL_MS = 3500;
   private isAnalyzing = false;
+  private detectedBarcode: string | null = null;
 
   constructor(
     private visionService: VisionService,
@@ -72,6 +84,7 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
     this.state = 'starting';
     this.errorMessage = '';
     this.attemptCount = 0;
+    this.detectedBarcode = null;
 
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
@@ -123,6 +136,7 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
 
     this.isAnalyzing = true;
     this.state = 'analyzing';
+    this.startThinkingDots();
 
     // Resize to max 800px width for smaller payload
     const scale = Math.min(800 / video.videoWidth, 1);
@@ -137,13 +151,21 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
     const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
     const base64 = dataUrl.split(',')[1];
 
-    this.visionService.identifyProduct(base64).subscribe({
+    // Save the captured image for the product
+    this.capturedImageUrl = dataUrl;
+
+    // Try to detect barcode from the canvas (non-blocking)
+    this.tryDetectBarcode(canvas);
+
+    this.visionService.identifyProduct(base64, this.detectedBarcode).subscribe({
       next: (result) => {
         this.isAnalyzing = false;
+        this.stopThinkingDots();
         this.attemptCount++;
 
         if (result.confidence > 0.7 && result.name && result.name !== 'Unknown Product') {
-          // Product identified!
+          // Attach captured image to result
+          result.capturedImageUrl = this.capturedImageUrl;
           this.identifiedProduct = result;
           this.state = 'identified';
           this.stopPeriodicCapture();
@@ -153,17 +175,21 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
             this.productIdentified.emit(result);
           }, 1500);
         } else if (this.attemptCount >= this.MAX_ATTEMPTS) {
-          // Too many failed attempts
           this.state = 'failed';
-          this.identifiedProduct = result.name ? result : null;
+          if (result.name) {
+            result.capturedImageUrl = this.capturedImageUrl;
+            this.identifiedProduct = result;
+          } else {
+            this.identifiedProduct = null;
+          }
           this.stopPeriodicCapture();
         } else {
-          // Try again
           this.state = 'scanning';
         }
       },
       error: () => {
         this.isAnalyzing = false;
+        this.stopThinkingDots();
         this.attemptCount++;
 
         if (this.attemptCount >= this.MAX_ATTEMPTS) {
@@ -174,6 +200,25 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
         }
       },
     });
+  }
+
+  private startThinkingDots() {
+    this.analyzingDots = '';
+    let count = 0;
+    this.dotsInterval = setInterval(() => {
+      count = (count + 1) % 4;
+      this.ngZone.run(() => {
+        this.analyzingDots = '.'.repeat(count);
+      });
+    }, 400);
+  }
+
+  private stopThinkingDots() {
+    if (this.dotsInterval) {
+      clearInterval(this.dotsInterval);
+      this.dotsInterval = null;
+    }
+    this.analyzingDots = '';
   }
 
   retryScanning() {
@@ -194,6 +239,20 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
     this.cancelled.emit();
   }
 
+  private tryDetectBarcode(canvas: HTMLCanvasElement) {
+    // Use BarcodeDetector API if available (Chrome/Edge)
+    if (window.BarcodeDetector) {
+      try {
+        const detector = new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
+        detector.detect(canvas).then((barcodes: { rawValue: string }[]) => {
+          if (barcodes.length > 0 && !this.detectedBarcode) {
+            this.detectedBarcode = barcodes[0].rawValue;
+          }
+        }).catch(() => {});
+      } catch { /* BarcodeDetector not fully supported */ }
+    }
+  }
+
   private stopPeriodicCapture() {
     if (this.scanInterval) {
       clearInterval(this.scanInterval);
@@ -203,6 +262,7 @@ export class ProductScannerComponent implements AfterViewInit, OnDestroy {
 
   private stopCamera() {
     this.stopPeriodicCapture();
+    this.stopThinkingDots();
     if (this.stream) {
       this.stream.getTracks().forEach(t => t.stop());
       this.stream = null;

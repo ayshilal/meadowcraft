@@ -44,11 +44,9 @@
     <ion-item-sliding *ngFor="let product of filteredProducts">
       <ion-item class="product-item" lines="none" (click)="openProductDetail(product)">
         <div class="product-card-inner">
-          <div class="product-pattern-strip"
+          <div class="product-img-strip"
                [style.background-image]="'url(' + getCategoryMorrisPattern(product.category) + ')'">
-            <div class="illustration-overlay">
-              <img [src]="product.imageUrl || getCategoryImage(product.category)" alt="" class="product-illustration">
-            </div>
+            <img [src]="product.imageUrl || getCategoryImage(product.category)" alt="" class="product-img">
           </div>
           <div class="product-info">
             <h3>{{ product.name }}</h3>
@@ -126,9 +124,8 @@
       <ion-content class="detail-content">
         <div class="product-detail-header"
              [style.background-image]="'url(' + getCategoryMorrisPattern(selectedProduct?.category || 'Other') + ')'">
-          <div class="detail-header-label">
-            <img [src]="selectedProduct?.imageUrl || getCategoryImage(selectedProduct?.category || 'Other')" alt="" class="detail-header-illustration">
-            <span>{{ selectedProduct?.category }}</span>
+          <div class="detail-header-overlay">
+            <img [src]="selectedProduct?.imageUrl || getCategoryImage(selectedProduct?.category || 'Other')" alt="" class="detail-product-img">
           </div>
         </div>
 
@@ -163,6 +160,105 @@
           <div class="detail-section" *ngIf="productRoutines.length === 0">
             <h4>Used In</h4>
             <p class="not-used">Not added to any routine yet</p>
+          </div>
+
+          <!-- No Rating — Analyze Button -->
+          <div class="no-rating-section" *ngIf="selectedProduct && !selectedProduct.apothecaryRating && !isAnalyzingProduct">
+            <img src="assets/icons/apothecary/flask.svg" class="no-rating-icon" alt="">
+            <p class="no-rating-text">No apothecary rating yet</p>
+            <ion-button fill="outline" size="small" (click)="analyzeExistingProduct()" class="analyze-btn">
+              <img src="assets/icons/apothecary/leaf.svg" class="btn-icon" alt="">
+              Analyze Ingredients
+            </ion-button>
+          </div>
+
+          <!-- Analyzing Spinner -->
+          <div class="analyzing-product" *ngIf="isAnalyzingProduct">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Analyzing ingredients...</p>
+          </div>
+
+          <!-- Apothecary Verdict -->
+          <div class="verdict-section" *ngIf="selectedProduct?.apothecaryRating as rating">
+            <!-- Grade -->
+            <div class="verdict-grade">
+              <div class="grade-flowers">
+                <img *ngFor="let f of getFlowerArray(rating.grade)"
+                     [src]="f.filled ? 'assets/icons/apothecary/flower-filled.svg' : 'assets/icons/apothecary/flower.svg'"
+                     [class.filled]="f.filled"
+                     class="flower-icon" alt="">
+              </div>
+              <p class="grade-label">{{ rating.grade }}</p>
+            </div>
+
+            <!-- 3 Circular Gauges -->
+            <div class="score-gauges">
+              <div class="gauge">
+                <svg viewBox="0 0 80 80" class="gauge-svg">
+                  <circle cx="40" cy="40" r="34" class="gauge-bg"/>
+                  <circle cx="40" cy="40" r="34" class="gauge-ring actives"
+                          [style.stroke-dashoffset]="getGaugeDashoffset(rating.actives)"/>
+                </svg>
+                <span class="gauge-score">{{ rating.actives }}</span>
+                <span class="gauge-label">Actives</span>
+              </div>
+              <div class="gauge">
+                <svg viewBox="0 0 80 80" class="gauge-svg">
+                  <circle cx="40" cy="40" r="34" class="gauge-bg"/>
+                  <circle cx="40" cy="40" r="34" class="gauge-ring purity"
+                          [style.stroke-dashoffset]="getGaugeDashoffset(rating.purity)"/>
+                </svg>
+                <span class="gauge-score">{{ rating.purity }}</span>
+                <span class="gauge-label">Purity</span>
+              </div>
+              <div class="gauge">
+                <svg viewBox="0 0 80 80" class="gauge-svg">
+                  <circle cx="40" cy="40" r="34" class="gauge-bg"/>
+                  <circle cx="40" cy="40" r="34" class="gauge-ring harmony"
+                          [style.stroke-dashoffset]="getGaugeDashoffset(harmonyResult?.harmony ?? rating.harmony)"/>
+                </svg>
+                <span class="gauge-score">{{ harmonyResult?.harmony ?? rating.harmony }}</span>
+                <span class="gauge-label">Harmony</span>
+              </div>
+            </div>
+
+            <!-- Harmony Chips -->
+            <div class="harmony-chips" *ngIf="harmonyResult">
+              <div class="harmony-chip conflict" *ngFor="let c of harmonyResult.conflicts">
+                <img src="assets/icons/apothecary/warning.svg" class="chip-icon" alt="">
+                <span>{{ c }}</span>
+              </div>
+              <div class="harmony-chip synergy" *ngFor="let s of harmonyResult.synergies">
+                <img src="assets/icons/apothecary/sparkle.svg" class="chip-icon" alt="">
+                <span>{{ s }}</span>
+              </div>
+            </div>
+
+            <!-- Ingredient Summary + Cards -->
+            <div class="ingredient-section" *ngIf="rating.ingredientRatings?.length">
+              <div class="ingredient-summary">
+                <span class="count-badge beneficial" *ngIf="getIngredientCounts(rating).beneficial">
+                  {{ getIngredientCounts(rating).beneficial }} beneficial
+                </span>
+                <span class="count-badge neutral" *ngIf="getIngredientCounts(rating).neutral">
+                  {{ getIngredientCounts(rating).neutral }} neutral
+                </span>
+                <span class="count-badge caution" *ngIf="getIngredientCounts(rating).caution">
+                  {{ getIngredientCounts(rating).caution }} caution
+                </span>
+              </div>
+
+              <div class="ingredient-strip">
+                <div class="ingredient-card" *ngFor="let ing of rating.ingredientRatings"
+                     [class.beneficial]="ing.rating === 'beneficial'"
+                     [class.neutral]="ing.rating === 'neutral'"
+                     [class.caution]="ing.rating === 'caution'">
+                  <img [src]="getIngredientIcon(ing.rating)" class="card-icon" alt="">
+                  <span class="card-name">{{ ing.name }}</span>
+                  <span class="card-note">{{ ing.note }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </ion-content>
