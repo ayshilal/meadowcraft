@@ -2,6 +2,12 @@
 
 A luxury self-care and skincare routine app with an AI dermatologist chatbot, built with Angular/Ionic and .NET Aspire.
 
+**[View Project](https://aysehilal.dev/?projects)**
+
+## Goal
+
+Meadowcraft helps users build consistent skincare routines by combining product tracking, step-by-step routine management, and an AI-powered dermatologist chatbot. The app looks up real product data via barcode scanning, lets users organize morning and evening routines with drag-and-drop, and provides personalized skincare advice through a RAG-enhanced AI assistant that understands the user's products and routine context.
+
 ## Features
 
 - **Skincare Routines** — Build and manage morning and evening routines with drag-and-drop reordering
