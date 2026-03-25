@@ -14,14 +14,18 @@ A luxury self-care and skincare routine app with an AI dermatologist chatbot, bu
 
 ## Tech Stack
 
+- **Angular / Ionic** — frontend (SCSS with William Morris Arts & Crafts theme)
+- **.NET 9 / ASP.NET Core** — backend Web API
+- **.NET Aspire** — local orchestration, service wiring, and distributed observability
 - **MCP C# SDK** — exposing agent capabilities via Model Context Protocol
 - **Azure AI Foundry** — GPT-4.1 + embeddings (proprietary, in-tenant)
 - **Azure AI Search** — RAG with vector search
 - **Durable Functions** — orchestrating multi-step agent pipelines
 - **Azure Service Bus** — agent-to-agent communication
 - **Cosmos DB** — conversation memory and agent state
-- **.NET Aspire** — local orchestration, service wiring, and distributed observability
-- **Angular / Ionic** — frontend
+- **Azure AD B2C** — authentication
+- **Azure Static Web Apps** — frontend hosting
+- **Azure App Service** — API hosting
 
 ## Project Structure
 
