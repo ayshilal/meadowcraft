@@ -2,6 +2,8 @@
 
 A luxury self-care and skincare routine app with an AI dermatologist chatbot, built with Angular/Ionic and .NET Aspire.
 
+**[View Project](https://aysehilal.dev/?projects)**
+
 ## Features
 
 - **Skincare Routines** — Build and manage morning and evening routines with drag-and-drop reordering
@@ -12,15 +14,14 @@ A luxury self-care and skincare routine app with an AI dermatologist chatbot, bu
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Angular 19, Ionic 8, SCSS (William Morris Arts & Crafts theme) |
-| Backend | .NET 9, ASP.NET Core Web API |
-| Orchestration | .NET Aspire 9.2 |
-| Database | Azure PostgreSQL (Flexible Server) |
-| AI | Azure OpenAI (GPT-4.1), Azure AI Search (semantic/RAG) |
-| Auth | Azure AD B2C (optional — app works without it) |
-| Hosting | Azure Static Web Apps (frontend), Azure App Service F1 (API) |
+- **MCP C# SDK** — exposing agent capabilities via Model Context Protocol
+- **Azure AI Foundry** — GPT-4.1 + embeddings (proprietary, in-tenant)
+- **Azure AI Search** — RAG with vector search
+- **Durable Functions** — orchestrating multi-step agent pipelines
+- **Azure Service Bus** — agent-to-agent communication
+- **Cosmos DB** — conversation memory and agent state
+- **.NET Aspire** — local orchestration, service wiring, and distributed observability
+- **Angular / Ionic** — frontend
 
 ## Project Structure
 
