@@ -4,6 +4,33 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Routine, RoutineStep } from '../models/routine.model';
 
+export interface GeneratedStep {
+  order: number;
+  productName: string;
+  brand: string;
+  category: string;
+  notes: string;
+  reasoning: string;
+}
+
+export interface DaySchedule {
+  morning: string[];
+  evening: string[];
+}
+
+export interface GeneratedRoutine {
+  morningSteps: GeneratedStep[];
+  eveningSteps: GeneratedStep[];
+  weeklySchedule?: { [day: string]: DaySchedule };
+  explanation: string;
+}
+
+export interface GenerateRoutineRequest {
+  products: { name: string; brand: string; category: string; description?: string }[];
+  skinType?: string;
+  skinConcerns?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -100,5 +127,19 @@ export class RoutineService {
         : this.eveningRoutineSubject;
     const current = subject.value.filter((s) => s.id !== stepId);
     subject.next(current);
+  }
+
+  generateRoutine(request: GenerateRoutineRequest): Observable<GeneratedRoutine> {
+    return this.api.post<GeneratedRoutine>('routines/generate', request);
+  }
+
+  applyGeneratedRoutine(routine: GeneratedRoutine): Observable<void> {
+    return this.api.post<void>('routines/apply', routine).pipe(
+      tap(() => {
+        // Reload both routines from API
+        this.loadRoutine('Morning');
+        this.loadRoutine('Evening');
+      })
+    );
   }
 }

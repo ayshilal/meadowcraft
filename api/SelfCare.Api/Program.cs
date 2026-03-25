@@ -8,13 +8,13 @@ builder.AddApiServices();
 var app = builder.Build();
 app.MapApiPipeline();
 
-// Apply migrations and seed data on startup
+// Apply migrations and seed reference data on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
-    await SeedData.InitializeAsync(db);
-    await SeedData.SeedUserDataAsync(db, "dev-user");
+    await SeedData.InitializeAsync(db); // Beauty facts & recommendations only
+    // SeedUserDataAsync removed — no more mock products/routines
 }
 
 app.Run();

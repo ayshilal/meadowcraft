@@ -1,0 +1,78 @@
+<div class="scanner-container">
+  <div class="scanner-header">
+    <h2>Identify Product</h2>
+    <ion-button fill="clear" (click)="cancel()" class="close-btn">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Live Viewfinder -->
+  <div class="viewfinder" [class.analyzing]="state === 'analyzing'" [class.identified]="state === 'identified'">
+    <video #videoElement autoplay playsinline muted></video>
+    <canvas #canvasElement style="display: none;"></canvas>
+
+    <!-- Scanning overlay -->
+    <div class="scan-overlay" *ngIf="state === 'scanning'">
+      <div class="scan-frame"></div>
+      <p class="scan-label">Point at a product</p>
+    </div>
+
+    <!-- Analyzing / Thinking overlay -->
+    <div class="analyzing-overlay" *ngIf="state === 'analyzing'">
+      <div class="thinking-container">
+        <div class="thinking-brain">
+          <div class="brain-ring"></div>
+          <div class="brain-ring delay-1"></div>
+          <div class="brain-ring delay-2"></div>
+          <ion-spinner name="dots" class="thinking-spinner"></ion-spinner>
+        </div>
+        <p class="thinking-text">AI is thinking{{ analyzingDots }}</p>
+        <p class="thinking-subtext">Identifying your product</p>
+      </div>
+    </div>
+
+    <!-- Checkmark overlay -->
+    <div class="success-overlay" *ngIf="state === 'identified' && identifiedProduct">
+      <div class="checkmark-circle">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <p class="identified-name">{{ identifiedProduct.name }}</p>
+      <p class="identified-brand">{{ identifiedProduct.brand }}</p>
+      <p class="saving-text">Saving to your collection...</p>
+    </div>
+
+    <!-- Failed overlay -->
+    <div class="failed-overlay" *ngIf="state === 'failed'">
+      <ion-icon name="alert-circle-outline" class="failed-icon"></ion-icon>
+      <p class="failed-text">Could not identify product</p>
+      <div class="failed-actions">
+        <ion-button fill="outline" size="small" (click)="retryScanning()" class="retry-btn">
+          Try Again
+        </ion-button>
+        <ion-button *ngIf="identifiedProduct" fill="solid" size="small" (click)="useResult()" class="use-btn">
+          Use Best Guess
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Starting spinner -->
+    <div class="starting-overlay" *ngIf="state === 'starting'">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Starting camera...</p>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-section" *ngIf="state === 'error'">
+    <p class="error-text">{{ errorMessage }}</p>
+    <ion-button expand="block" (click)="startCamera()" class="retry-full-btn">
+      Try Again
+    </ion-button>
+  </div>
+
+  <!-- Attempt counter -->
+  <div class="attempt-info" *ngIf="state === 'scanning'">
+    <span *ngIf="attemptCount > 0">Attempt {{ attemptCount + 1 }} of {{ MAX_ATTEMPTS }}</span>
+    <span *ngIf="attemptCount === 0">AI is looking...</span>
+  </div>
+</div>

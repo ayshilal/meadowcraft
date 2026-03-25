@@ -44,8 +44,10 @@ import {
   chatbubblesOutline,
   sendOutline,
   checkmarkOutline,
+  sparklesOutline,
+  calendarOutline,
 } from 'ionicons/icons';
-import { RoutineService } from '../../services/routine.service';
+import { RoutineService, GeneratedRoutine, GeneratedStep, DaySchedule } from '../../services/routine.service';
 import { ProductService } from '../../services/product.service';
 import { AiChatService } from '../../services/ai-chat.service';
 import { ProgressService } from '../../services/progress.service';
@@ -113,6 +115,24 @@ export class RoutinePage implements OnInit {
   isAiConfigured = true;
   @ViewChild('chatContent') chatContent!: IonContent;
 
+  // AI Routine Generation
+  isGenerating = false;
+  isPreviewOpen = false;
+  generatedRoutine: GeneratedRoutine | null = null;
+  previewType: 'Morning' | 'Evening' = 'Morning';
+  isApplying = false;
+
+  // Weekly Schedule
+  weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  weekDayLabels: Record<string, string> = {
+    monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed',
+    thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun'
+  };
+  selectedDay = '';
+  isScheduleOpen = false;
+  savedWeeklySchedule: { [day: string]: DaySchedule } | null = null;
+  weekOverrides: { usedThisWeek: string[]; skippedToday: string[] } = { usedThisWeek: [], skippedToday: [] };
+
   constructor(
     private routineService: RoutineService,
     private productService: ProductService,
@@ -131,6 +151,8 @@ export class RoutinePage implements OnInit {
       chatbubblesOutline,
       sendOutline,
       checkmarkOutline,
+      sparklesOutline,
+      calendarOutline,
     });
     this.isAiConfigured = true;
   }
@@ -140,6 +162,27 @@ export class RoutinePage implements OnInit {
       (products) => (this.products = products)
     );
     this.loadSteps();
+
+    // Load saved weekly schedule
+    const saved = localStorage.getItem('weeklySchedule');
+    if (saved) {
+      try { this.savedWeeklySchedule = JSON.parse(saved); } catch { /* ignore */ }
+    }
+    // Load overrides (reset daily)
+    const overrides = localStorage.getItem('weekOverrides');
+    if (overrides) {
+      try {
+        const parsed = JSON.parse(overrides);
+        // Reset if it's a new day
+        if (parsed.date === new Date().toDateString()) {
+          this.weekOverrides = parsed;
+        } else {
+          // New day — clear skippedToday but keep usedThisWeek
+          this.weekOverrides = { usedThisWeek: parsed.usedThisWeek || [], skippedToday: [] };
+          this.saveOverrides();
+        }
+      } catch { /* ignore */ }
+    }
   }
 
   loadSteps() {
@@ -390,5 +433,292 @@ export class RoutinePage implements OnInit {
     setTimeout(() => {
       this.chatContent?.scrollToBottom(300);
     }, 100);
+  }
+
+  // --- AI Routine Generation ---
+
+  async generateRoutine() {
+    if (this.products.length === 0) {
+      const toast = await this.toastController.create({
+        message: 'Add some products first before generating a routine.',
+        duration: 2000,
+        color: 'warning',
+        position: 'top',
+      });
+      await toast.present();
+      return;
+    }
+
+    this.isGenerating = true;
+
+    const request = {
+      products: this.products.map(p => ({
+        name: p.name,
+        brand: p.brand,
+        category: p.category,
+        description: p.description,
+      })),
+    };
+
+    this.routineService.generateRoutine(request).subscribe({
+      next: async (result) => {
+        this.isGenerating = false;
+        this.generatedRoutine = result;
+        this.previewType = this.routineType;
+        this.isPreviewOpen = true;
+      },
+      error: async () => {
+        this.isGenerating = false;
+        const toast = await this.toastController.create({
+          message: 'Failed to generate routine. Try again.',
+          duration: 2000,
+          color: 'danger',
+          position: 'top',
+        });
+        await toast.present();
+      },
+    });
+  }
+
+  getPreviewSteps(): GeneratedStep[] {
+    if (!this.generatedRoutine) return [];
+    return this.previewType === 'Morning'
+      ? this.generatedRoutine.morningSteps
+      : this.generatedRoutine.eveningSteps;
+  }
+
+  getProductImage(stepName: string): string {
+    const product = this.products.find(p =>
+      p.name.toLowerCase() === stepName.toLowerCase() ||
+      p.name.toLowerCase().includes(stepName.toLowerCase()) ||
+      stepName.toLowerCase().includes(p.name.toLowerCase())
+    );
+    return product?.imageUrl || '';
+  }
+
+  getCategoryImageForStep(category: string): string {
+    const images: Record<string, string> = {
+      Cleanser: 'assets/illustrations/cleanser.svg',
+      Toner: 'assets/illustrations/toner.svg',
+      Serum: 'assets/illustrations/serum.svg',
+      Moisturizer: 'assets/illustrations/moisturizer.svg',
+      SPF: 'assets/illustrations/spf.svg',
+      Mask: 'assets/illustrations/mask.svg',
+      Exfoliant: 'assets/illustrations/exfoliant.svg',
+      'Eye Cream': 'assets/illustrations/eye-cream.svg',
+      Oil: 'assets/illustrations/oil.svg',
+      Other: 'assets/illustrations/other.svg',
+    };
+    return images[category] || 'assets/illustrations/other.svg';
+  }
+
+  closePreview() {
+    this.isPreviewOpen = false;
+    this.generatedRoutine = null;
+  }
+
+  async applyRoutine() {
+    if (!this.generatedRoutine) return;
+    this.isApplying = true;
+
+    // Save weekly schedule to localStorage before clearing generatedRoutine
+    if (this.generatedRoutine.weeklySchedule) {
+      localStorage.setItem('weeklySchedule', JSON.stringify(this.generatedRoutine.weeklySchedule));
+      this.savedWeeklySchedule = this.generatedRoutine.weeklySchedule;
+    }
+
+    this.routineService.applyGeneratedRoutine(this.generatedRoutine).subscribe({
+      next: async () => {
+        this.isApplying = false;
+        this.isPreviewOpen = false;
+        this.generatedRoutine = null;
+
+        const toast = await this.toastController.create({
+          message: 'Routine applied! Both morning and evening routines updated.',
+          duration: 3000,
+          color: 'success',
+          position: 'top',
+        });
+        await toast.present();
+      },
+      error: async () => {
+        this.isApplying = false;
+        const toast = await this.toastController.create({
+          message: 'Failed to apply routine. Try again.',
+          duration: 2000,
+          color: 'danger',
+          position: 'top',
+        });
+        await toast.present();
+      },
+    });
+  }
+
+  // --- Weekly Schedule ---
+
+  hasWeeklySchedule(): boolean {
+    return !!this.generatedRoutine?.weeklySchedule &&
+      Object.keys(this.generatedRoutine.weeklySchedule).length > 0;
+  }
+
+  getDaySchedule(day: string): DaySchedule | null {
+    return this.generatedRoutine?.weeklySchedule?.[day] ?? null;
+  }
+
+  isDayDifferent(day: string): boolean {
+    if (!this.generatedRoutine?.weeklySchedule) return false;
+    const schedule = this.generatedRoutine.weeklySchedule[day];
+    if (!schedule) return false;
+    const baseMorningCount = this.generatedRoutine.morningSteps.length;
+    const baseEveningCount = this.generatedRoutine.eveningSteps.length;
+    return schedule.morning.length !== baseMorningCount ||
+           schedule.evening.length !== baseEveningCount;
+  }
+
+  openDayDetail(day: string) {
+    this.selectedDay = day;
+    this.isScheduleOpen = true;
+  }
+
+  closeDayDetail() {
+    this.isScheduleOpen = false;
+  }
+
+  getTodayKey(): string {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return days[new Date().getDay()];
+  }
+
+  getTodaySchedule(): DaySchedule | null {
+    if (!this.savedWeeklySchedule) return null;
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = days[new Date().getDay()];
+    return this.savedWeeklySchedule[today] ?? null;
+  }
+
+  getTodayName(): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[new Date().getDay()];
+  }
+
+  getTodayProducts(): string[] {
+    const schedule = this.getTodaySchedule();
+    if (!schedule) return [];
+    return this.routineType === 'Morning' ? schedule.morning : schedule.evening;
+  }
+
+  isProductScheduledToday(productName: string): boolean {
+    const lower = productName.toLowerCase();
+
+    // Check if skipped today
+    if (this.weekOverrides.skippedToday.includes(lower)) return false;
+
+    // Check if used this week (and it's a limited-use product)
+    if (this.weekOverrides.usedThisWeek.includes(lower)) return false;
+
+    const todayProducts = this.getTodayProducts();
+    if (todayProducts.length === 0) return true; // No schedule = use all
+    return todayProducts.some(p =>
+      p.toLowerCase().includes(lower) ||
+      lower.includes(p.toLowerCase())
+    );
+  }
+
+  getSavedDaySchedule(day: string): DaySchedule | null {
+    return this.savedWeeklySchedule?.[day] ?? null;
+  }
+
+  isSavedDayDifferent(day: string): boolean {
+    if (!this.savedWeeklySchedule) return false;
+    const schedule = this.savedWeeklySchedule[day];
+    if (!schedule) return false;
+    // Compare against the longest day (full routine)
+    const maxMorning = Math.max(...Object.values(this.savedWeeklySchedule).map(d => d.morning.length));
+    const maxEvening = Math.max(...Object.values(this.savedWeeklySchedule).map(d => d.evening.length));
+    return schedule.morning.length < maxMorning || schedule.evening.length < maxEvening;
+  }
+
+  async markUsedSkipWeek(productName: string) {
+    if (!productName) return;
+    const lower = productName.toLowerCase();
+    if (!this.weekOverrides.usedThisWeek.includes(lower)) {
+      this.weekOverrides.usedThisWeek.push(lower);
+      this.saveOverrides();
+
+      // Also remove from remaining days in savedWeeklySchedule
+      if (this.savedWeeklySchedule) {
+        const todayIdx = new Date().getDay(); // 0=Sun
+        const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        for (let i = todayIdx + 1; i < 7; i++) {
+          const day = dayOrder[i];
+          const schedule = this.savedWeeklySchedule[day];
+          if (schedule) {
+            schedule.evening = schedule.evening.filter(p => !p.toLowerCase().includes(lower) && !lower.includes(p.toLowerCase()));
+            schedule.morning = schedule.morning.filter(p => !p.toLowerCase().includes(lower) && !lower.includes(p.toLowerCase()));
+          }
+        }
+        localStorage.setItem('weeklySchedule', JSON.stringify(this.savedWeeklySchedule));
+      }
+
+      const toast = await this.toastController.create({
+        message: `Used ${productName} — skipping for the rest of the week`,
+        duration: 2000,
+        color: 'success',
+        position: 'top',
+      });
+      await toast.present();
+    }
+  }
+
+  async skipToday(productName: string) {
+    if (!productName) return;
+    const lower = productName.toLowerCase();
+    if (!this.weekOverrides.skippedToday.includes(lower)) {
+      this.weekOverrides.skippedToday.push(lower);
+      this.saveOverrides();
+
+      const toast = await this.toastController.create({
+        message: `Skipping ${productName} today`,
+        duration: 2000,
+        color: 'medium',
+        position: 'top',
+      });
+      await toast.present();
+    }
+  }
+
+  async resetScheduleTracking() {
+    localStorage.removeItem('weekOverrides');
+    localStorage.removeItem('weeklySchedule');
+    this.savedWeeklySchedule = null;
+    this.weekOverrides = { usedThisWeek: [], skippedToday: [] };
+    const toast = await this.toastController.create({
+      message: 'Schedule tracking reset',
+      duration: 1500,
+      color: 'medium',
+      position: 'top',
+    });
+    await toast.present();
+  }
+
+  private saveOverrides() {
+    localStorage.setItem('weekOverrides', JSON.stringify({
+      ...this.weekOverrides,
+      date: new Date().toDateString(),
+    }));
+  }
+
+  getDayDifferences(day: string): { removed: string[]; added: string[] } {
+    if (!this.generatedRoutine?.weeklySchedule) return { removed: [], added: [] };
+    const schedule = this.generatedRoutine.weeklySchedule[day];
+    if (!schedule) return { removed: [], added: [] };
+
+    const baseEvening = this.generatedRoutine.eveningSteps.map(s => s.productName.toLowerCase());
+    const dayEvening = schedule.evening.map(s => s.toLowerCase());
+
+    const removed = baseEvening.filter(p => !dayEvening.includes(p));
+    const added = dayEvening.filter(p => !baseEvening.includes(p));
+
+    return { removed, added };
   }
 }

@@ -9,6 +9,7 @@ public class Product
     public string? Description { get; set; }
     public string? Notes { get; set; }
     public string? ImageUrl { get; set; }
+    public string? ApothecaryRatingJson { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string UserId { get; set; } = "";
 }

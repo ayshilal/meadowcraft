@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ModelContextProtocol.AspNetCore;
 using SelfCare.Api.Data;
 using SelfCare.Api.Services;
+using SelfCare.Api.Tools;
 
 namespace SelfCare.Api;
 
@@ -54,6 +56,15 @@ public static class DependencyInjection
         // Services
         builder.Services.AddHttpClient<IBarcodeService, BarcodeService>();
         builder.Services.AddScoped<IChatService, ChatService>();
+        builder.Services.AddScoped<IVisionService, VisionService>();
+
+        // MCP Server — exposes vision tools via Model Context Protocol
+        builder.Services.AddMcpServer(options =>
+        {
+            options.ServerInfo = new() { Name = "Meadowcraft Vision", Version = "1.0.0" };
+        })
+        .WithHttpTransport()
+        .WithTools<VisionTools>();
 
         // CORS — allow Angular dev server, Ionic, and production
         var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
@@ -93,6 +104,9 @@ public static class DependencyInjection
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+
+        // MCP endpoint for AI agent tool discovery and invocation
+        app.MapMcp();
 
         return app;
     }

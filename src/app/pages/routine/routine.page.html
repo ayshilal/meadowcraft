@@ -41,6 +41,59 @@
     </div>
   </div>
 
+  <!-- Weekly Schedule on main page -->
+  <div class="main-weekly" *ngIf="savedWeeklySchedule && steps.length > 0">
+    <div class="main-weekly-header">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>{{ getTodayName() }}'s {{ routineType }} Routine</span>
+      <ion-button fill="clear" size="small" class="reset-btn" (click)="resetScheduleTracking()">
+        Reset
+      </ion-button>
+    </div>
+    <div class="week-strip-main">
+      <div class="day-cell-main" *ngFor="let day of weekDays"
+           [class.today]="day === getTodayKey()"
+           [class.different]="isSavedDayDifferent(day)"
+           (click)="selectedDay = day; isScheduleOpen = true">
+        <span class="day-label-main">{{ weekDayLabels[day] }}</span>
+        <div class="day-dots-main">
+          <span class="dot morning" [class.active]="getSavedDaySchedule(day)?.morning?.length"></span>
+          <span class="dot evening" [class.active]="getSavedDaySchedule(day)?.evening?.length"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Detail Popup (main page) -->
+  <div class="day-detail" *ngIf="isScheduleOpen && selectedDay && savedWeeklySchedule && !isPreviewOpen">
+    <div class="day-detail-header">
+      <h4>{{ selectedDay | titlecase }}</h4>
+      <ion-button fill="clear" size="small" (click)="closeDayDetail()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+    <div class="day-routine" *ngIf="getSavedDaySchedule(selectedDay) as daySchedule">
+      <div class="day-period" *ngIf="daySchedule.morning.length">
+        <span class="period-label morning-label">Morning</span>
+        <div class="day-products">
+          <div class="day-product" *ngFor="let name of daySchedule.morning; let i = index">
+            <span class="day-product-num">{{ i + 1 }}</span>
+            <span class="day-product-name">{{ name }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-period" *ngIf="daySchedule.evening.length">
+        <span class="period-label evening-label">Evening</span>
+        <div class="day-products">
+          <div class="day-product" *ngFor="let name of daySchedule.evening; let i = index">
+            <span class="day-product-num">{{ i + 1 }}</span>
+            <span class="day-product-name">{{ name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Discuss Your Routine — compact bar -->
   <div class="discuss-bar" (click)="openChat()">
     <div class="discuss-bar-inner">
@@ -57,21 +110,30 @@
     <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($event)">
       <ion-item-sliding *ngFor="let step of steps; let i = index">
         <ion-item class="step-item" lines="none" (click)="openProductDetail(step.product)">
-          <div class="step-card-inner" [class.step-done]="isStepDone(i)">
+          <div class="step-card-inner" [class.step-done]="isStepDone(i)" [class.rest-day]="savedWeeklySchedule && !isProductScheduledToday(step.product?.name || '')">
             <div class="step-check" (click)="toggleStepDone(i, $event)"
                  [class.checked]="isStepDone(i)">
               <ion-icon name="checkmark-outline" *ngIf="isStepDone(i)"></ion-icon>
               <span *ngIf="!isStepDone(i)" class="step-number-small">{{ i + 1 }}</span>
             </div>
-            <div class="step-pattern-strip"
+            <div class="step-img-strip"
                  [style.background-image]="'url(' + getCategoryMorrisPattern(step.product?.category || 'Other') + ')'">
-              <div class="step-number-frame">
-                <span class="step-number">{{ i + 1 }}</span>
-              </div>
+              <img class="step-product-img"
+                   [src]="step.product?.imageUrl || getCategoryImage(step.product?.category || 'Other')"
+                   alt="">
             </div>
             <div class="step-info">
               <h3>{{ step.product?.name || 'Product' }}</h3>
               <p class="step-brand">{{ step.product?.brand }}</p>
+              <span class="rest-badge" *ngIf="savedWeeklySchedule && !isProductScheduledToday(step.product?.name || '') && weekOverrides.skippedToday.includes((step.product?.name || '').toLowerCase())">
+                Skipped today
+              </span>
+              <span class="rest-badge used" *ngIf="savedWeeklySchedule && weekOverrides.usedThisWeek.includes((step.product?.name || '').toLowerCase())">
+                Used this week — resting
+              </span>
+              <span class="rest-badge" *ngIf="savedWeeklySchedule && !isProductScheduledToday(step.product?.name || '') && !weekOverrides.skippedToday.includes((step.product?.name || '').toLowerCase()) && !weekOverrides.usedThisWeek.includes((step.product?.name || '').toLowerCase())">
+                Rest day — optional
+              </span>
               <ion-note *ngIf="step.notes" class="step-notes">{{ step.notes }}</ion-note>
               <div class="step-category-label" *ngIf="step.product?.category">
                 <span class="category-text">{{ step.product?.category }}</span>
@@ -83,6 +145,14 @@
           </ion-reorder>
         </ion-item>
         <ion-item-options side="end">
+          <ion-item-option color="warning" (click)="markUsedSkipWeek(step.product?.name || '')"
+                           *ngIf="savedWeeklySchedule && !isProductScheduledToday(step.product?.name || '')">
+            Used it
+          </ion-item-option>
+          <ion-item-option color="medium" (click)="skipToday(step.product?.name || '')"
+                           *ngIf="savedWeeklySchedule && isProductScheduledToday(step.product?.name || '')">
+            Skip
+          </ion-item-option>
           <ion-item-option color="danger" (click)="removeStep(step)">
             <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
           </ion-item-option>
@@ -99,8 +169,27 @@
           <ion-icon name="water-outline"></ion-icon>
           <h3>No steps yet</h3>
           <p>Add products to your {{ routineType.toLowerCase() }} routine</p>
+          <ion-button *ngIf="products.length > 0" (click)="generateRoutine()" [disabled]="isGenerating" class="generate-btn">
+            <ion-icon name="sparkles-outline" slot="start" *ngIf="!isGenerating"></ion-icon>
+            <ion-spinner name="dots" slot="start" *ngIf="isGenerating"></ion-spinner>
+            {{ isGenerating ? 'AI is building...' : 'Let AI Build Your Routine' }}
+          </ion-button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Generating overlay -->
+  <div class="generating-overlay" *ngIf="isGenerating">
+    <div class="generating-card">
+      <div class="generating-rings">
+        <div class="gen-ring"></div>
+        <div class="gen-ring delay-1"></div>
+        <div class="gen-ring delay-2"></div>
+        <ion-spinner name="dots" class="gen-spinner"></ion-spinner>
+      </div>
+      <h3>AI is crafting your routine</h3>
+      <p>Analyzing {{ products.length }} products for optimal order...</p>
     </div>
   </div>
 
@@ -109,6 +198,196 @@
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="start" *ngIf="products.length > 0">
+    <ion-fab-button (click)="generateRoutine()" [disabled]="isGenerating" class="generate-fab">
+      <ion-icon name="sparkles-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- AI Routine Preview Modal -->
+  <ion-modal [isOpen]="isPreviewOpen" (didDismiss)="closePreview()" class="preview-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Your Routine</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closePreview()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="preview-content">
+
+        <!-- Hero banner -->
+        <div class="preview-hero"
+             style="background-image: url('assets/images/morris/windrush.jpg')">
+          <div class="preview-hero-overlay">
+            <ion-icon name="sparkles-outline" class="hero-sparkle"></ion-icon>
+            <h2>Your Personalised Routine</h2>
+            <p class="hero-subtitle">Crafted from your {{ products.length }} products</p>
+          </div>
+        </div>
+
+        <!-- AI explanation as a quote -->
+        <div class="preview-quote" *ngIf="generatedRoutine?.explanation">
+          <div class="quote-mark">"</div>
+          <p>{{ generatedRoutine?.explanation }}</p>
+          <span class="quote-author">— AI Dermatologist</span>
+        </div>
+
+        <!-- Morning Section -->
+        <div class="routine-section" *ngIf="generatedRoutine?.morningSteps?.length">
+          <div class="section-header morning">
+            <ion-icon name="sunny-outline"></ion-icon>
+            <h3>Morning</h3>
+            <span class="step-count">{{ generatedRoutine?.morningSteps?.length }} steps</span>
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-step" *ngFor="let step of generatedRoutine?.morningSteps; let i = index; let last = last">
+              <div class="timeline-line" [class.last]="last">
+                <div class="timeline-dot">{{ i + 1 }}</div>
+              </div>
+              <div class="timeline-card">
+                <div class="card-top">
+                  <img class="card-product-img"
+                       [src]="getProductImage(step.productName) || getCategoryImageForStep(step.category)"
+                       alt="">
+                  <div class="card-text">
+                    <div class="card-header">
+                      <h4>{{ step.productName }}</h4>
+                      <span class="card-category">{{ step.category }}</span>
+                    </div>
+                    <p class="card-brand">{{ step.brand }}</p>
+                  </div>
+                </div>
+                <p class="card-tip" *ngIf="step.notes">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                  {{ step.notes }}
+                </p>
+                <p class="card-why" *ngIf="step.reasoning">{{ step.reasoning }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evening Section -->
+        <div class="routine-section" *ngIf="generatedRoutine?.eveningSteps?.length">
+          <div class="section-header evening">
+            <ion-icon name="moon-outline"></ion-icon>
+            <h3>Evening</h3>
+            <span class="step-count">{{ generatedRoutine?.eveningSteps?.length }} steps</span>
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-step" *ngFor="let step of generatedRoutine?.eveningSteps; let i = index; let last = last">
+              <div class="timeline-line" [class.last]="last">
+                <div class="timeline-dot">{{ i + 1 }}</div>
+              </div>
+              <div class="timeline-card">
+                <div class="card-top">
+                  <img class="card-product-img"
+                       [src]="getProductImage(step.productName) || getCategoryImageForStep(step.category)"
+                       alt="">
+                  <div class="card-text">
+                    <div class="card-header">
+                      <h4>{{ step.productName }}</h4>
+                      <span class="card-category">{{ step.category }}</span>
+                    </div>
+                    <p class="card-brand">{{ step.brand }}</p>
+                  </div>
+                </div>
+                <p class="card-tip" *ngIf="step.notes">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                  {{ step.notes }}
+                </p>
+                <p class="card-why" *ngIf="step.reasoning">{{ step.reasoning }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Schedule Calendar -->
+        <div class="weekly-section" *ngIf="hasWeeklySchedule()">
+          <div class="section-header">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <h3>Weekly Schedule</h3>
+          </div>
+
+          <div class="week-strip">
+            <div class="day-cell" *ngFor="let day of weekDays"
+                 [class.different]="isDayDifferent(day)"
+                 (click)="openDayDetail(day)">
+              <span class="day-label">{{ weekDayLabels[day] }}</span>
+              <div class="day-dots">
+                <span class="dot morning" [class.active]="getDaySchedule(day)?.morning?.length"></span>
+                <span class="dot evening" [class.active]="getDaySchedule(day)?.evening?.length"></span>
+              </div>
+              <span class="day-variation" *ngIf="isDayDifferent(day)">*</span>
+            </div>
+          </div>
+
+          <div class="schedule-legend">
+            <span><span class="dot morning active"></span> Morning</span>
+            <span><span class="dot evening active"></span> Evening</span>
+            <span class="legend-variation">* = variation</span>
+          </div>
+        </div>
+
+        <!-- Day Detail Popup -->
+        <div class="day-detail" *ngIf="isScheduleOpen && selectedDay">
+          <div class="day-detail-header">
+            <h4>{{ selectedDay | titlecase }}</h4>
+            <ion-button fill="clear" size="small" (click)="closeDayDetail()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="day-routine" *ngIf="getDaySchedule(selectedDay) as daySchedule">
+            <div class="day-period" *ngIf="daySchedule.morning.length">
+              <span class="period-label morning-label">Morning</span>
+              <div class="day-products">
+                <div class="day-product" *ngFor="let name of daySchedule.morning; let i = index">
+                  <span class="day-product-num">{{ i + 1 }}</span>
+                  <span class="day-product-name">{{ name }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="day-period" *ngIf="daySchedule.evening.length">
+              <span class="period-label evening-label">Evening</span>
+              <div class="day-products">
+                <div class="day-product" *ngFor="let name of daySchedule.evening; let i = index">
+                  <span class="day-product-num">{{ i + 1 }}</span>
+                  <span class="day-product-name">{{ name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="day-differences" *ngIf="isDayDifferent(selectedDay)">
+              <p class="diff-removed" *ngFor="let name of getDayDifferences(selectedDay).removed">
+                Skip: {{ name }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apply actions -->
+        <div class="preview-actions">
+          <ion-button expand="block" (click)="applyRoutine()" [disabled]="isApplying" class="apply-btn">
+            <ion-icon name="checkmark-outline" slot="start" *ngIf="!isApplying"></ion-icon>
+            <ion-spinner name="dots" slot="start" *ngIf="isApplying"></ion-spinner>
+            {{ isApplying ? 'Saving...' : 'Use This Routine' }}
+          </ion-button>
+          <ion-button expand="block" fill="clear" (click)="closePreview()" class="discard-btn">
+            Not now
+          </ion-button>
+        </div>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
   <!-- Chat Modal -->
   <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()" class="chat-modal">

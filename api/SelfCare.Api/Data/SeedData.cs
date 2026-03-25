@@ -54,13 +54,16 @@ public static class SeedData
 
         // Get products by name for routine step references
         var products = await db.Products.Where(p => p.UserId == userId).ToListAsync();
-        if (products.Count < 5) return;
 
-        var cleanser = products.First(p => p.Category == "Cleanser");
-        var toner = products.First(p => p.Category == "Toner");
-        var serum = products.First(p => p.Category == "Serum");
-        var moisturizer = products.First(p => p.Category == "Moisturizer");
-        var spf = products.First(p => p.Category == "SPF");
+        var cleanser = products.FirstOrDefault(p => p.Category == "Cleanser");
+        var toner = products.FirstOrDefault(p => p.Category == "Toner");
+        var serum = products.FirstOrDefault(p => p.Category == "Serum");
+        var moisturizer = products.FirstOrDefault(p => p.Category == "Moisturizer");
+        var spf = products.FirstOrDefault(p => p.Category == "SPF");
+
+        // Skip routine seeding if required product categories are missing
+        if (cleanser is null || toner is null || serum is null || moisturizer is null || spf is null)
+            return;
 
         // Seed morning routine
         var morningRoutine = await db.Routines

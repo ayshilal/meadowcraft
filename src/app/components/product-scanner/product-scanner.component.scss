@@ -1,0 +1,370 @@
+.scanner-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--lux-parchment);
+  padding: 16px;
+}
+
+.scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--lux-ink);
+    margin: 0;
+  }
+
+  .close-btn {
+    --color: var(--lux-ink-light);
+    font-size: 24px;
+  }
+}
+
+// Viewfinder
+.viewfinder {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  min-height: 300px;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.analyzing {
+    border: 3px solid var(--lux-ink);
+    animation: borderPulse 1.5s ease-in-out infinite;
+  }
+
+  &.identified {
+    border: 3px solid #22c55e;
+  }
+}
+
+// Scanning frame overlay
+.scan-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  .scan-frame {
+    width: 220px;
+    height: 220px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+
+    &.pulse {
+      animation: framePulse 1.2s ease-in-out infinite;
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .scan-label {
+    margin-top: 16px;
+    color: #fff;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  }
+}
+
+// Analyzing / Thinking overlay
+.analyzing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+
+  .thinking-container {
+    text-align: center;
+  }
+
+  .thinking-brain {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .brain-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      animation: ringRotate 1.5s linear infinite;
+
+      &.delay-1 {
+        width: 60px;
+        height: 60px;
+        border-top-color: rgba(255, 255, 255, 0.6);
+        animation-duration: 2s;
+        animation-direction: reverse;
+      }
+
+      &.delay-2 {
+        width: 40px;
+        height: 40px;
+        border-top-color: rgba(255, 255, 255, 0.4);
+        animation-duration: 2.5s;
+      }
+    }
+
+    .thinking-spinner {
+      --color: #fff;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .thinking-text {
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    min-width: 180px;
+  }
+
+  .thinking-subtext {
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+}
+
+// Success overlay
+.success-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+
+  .checkmark-circle {
+    animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    ion-icon {
+      font-size: 80px;
+      color: #22c55e;
+      filter: drop-shadow(0 2px 8px rgba(34, 197, 94, 0.5));
+    }
+  }
+
+  .identified-name {
+    margin-top: 16px;
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    padding: 0 24px;
+    animation: fadeInUp 0.4s ease 0.2s both;
+  }
+
+  .identified-brand {
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    animation: fadeInUp 0.4s ease 0.3s both;
+  }
+
+  .saving-text {
+    margin-top: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    animation: fadeInUp 0.4s ease 0.5s both;
+  }
+}
+
+// Failed overlay
+.failed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+
+  .failed-icon {
+    font-size: 60px;
+    color: #fbbf24;
+  }
+
+  .failed-text {
+    margin-top: 12px;
+    color: #fff;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .failed-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+
+    .retry-btn {
+      --border-color: #fff;
+      --color: #fff;
+      --border-radius: 4px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .use-btn {
+      --background: var(--lux-ink);
+      --color: var(--lux-parchment);
+      --border-radius: 4px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+  }
+}
+
+// Starting overlay
+.starting-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  ion-spinner {
+    --color: #fff;
+    width: 40px;
+    height: 40px;
+  }
+
+  p {
+    margin-top: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
+
+// Error section
+.error-section {
+  padding: 20px 0;
+  text-align: center;
+
+  .error-text {
+    color: #991b1b;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .retry-full-btn {
+    --background: var(--lux-ink);
+    --color: var(--lux-parchment);
+    --border-radius: 4px;
+  }
+}
+
+// Attempt info
+.attempt-info {
+  text-align: center;
+  padding: 12px 0 4px;
+
+  span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    color: var(--lux-ink-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
+
+// Animations
+@keyframes borderPulse {
+  0%, 100% { border-color: var(--lux-ink); }
+  50% { border-color: rgba(44, 44, 44, 0.3); }
+}
+
+@keyframes framePulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

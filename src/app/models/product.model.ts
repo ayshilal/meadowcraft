@@ -1,3 +1,5 @@
+import { ApothecaryRating } from '../services/vision.service';
+
 export interface Product {
   id?: number;
   name: string;
@@ -7,6 +9,8 @@ export interface Product {
   notes?: string;
   imageUrl?: string;
   createdAt?: string;
+  apothecaryRating?: ApothecaryRating;
+  apothecaryRatingJson?: string; // JSON string for DB persistence
 }
 
 export type ProductCategory =

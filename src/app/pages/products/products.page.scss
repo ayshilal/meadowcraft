@@ -146,44 +146,25 @@
     min-height: 88px;
   }
 
-  .product-pattern-strip {
+  .product-img-strip {
     width: 88px;
-    min-height: 88px;
+    min-height: 92px;
     flex-shrink: 0;
     background-size: cover;
     background-position: center;
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 8px 0 0 8px;
 
-    .illustration-overlay {
-      width: 56px;
-      height: 56px;
+    .product-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid var(--lux-parchment);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       background: var(--lux-parchment);
-      border: 1.5px solid var(--lux-ink);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        right: 2px;
-        bottom: 2px;
-        border: 0.5px solid var(--lux-ink);
-        pointer-events: none;
-      }
-    }
-
-    .product-illustration {
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
     }
   }
 
@@ -318,41 +299,26 @@
   background-position: center;
   overflow: hidden;
 
-  .detail-header-label {
+  .detail-header-overlay {
     position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--lux-parchment);
-    border: 2px solid var(--lux-ink);
-    padding: 8px 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--lux-ink);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    white-space: nowrap;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      right: 2px;
-      bottom: 2px;
-      border: 1px solid var(--lux-ink);
-      pointer-events: none;
-    }
+    justify-content: center;
   }
 
-  .detail-header-illustration {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
+  .detail-product-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 3px solid var(--lux-parchment);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    background: var(--lux-parchment);
   }
 }
 
@@ -459,6 +425,52 @@
   --box-shadow: 0 4px 16px rgba(44, 44, 44, 0.3);
 }
 
+// --- Photo FAB ---
+.photo-fab-container {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.photo-fab {
+  --background: var(--lux-ink);
+  --color: var(--lux-parchment);
+  --box-shadow: 0 4px 16px rgba(44, 44, 44, 0.3);
+}
+
+// --- AI Identify Overlay ---
+.identify-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  .identify-spinner {
+    text-align: center;
+
+    ion-spinner {
+      --color: var(--lux-ink);
+      width: 48px;
+      height: 48px;
+    }
+
+    p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      color: var(--lux-ink);
+      margin-top: 16px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+}
+
 // --- Scanner Modal ---
 .scanner-content {
   --background: var(--lux-parchment);
@@ -557,5 +569,319 @@
     margin-top: 24px;
     font-weight: 600;
     letter-spacing: 2px;
+  }
+}
+
+// No Rating / Analyze Button
+.no-rating-section {
+  margin-top: 20px;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #faf6f0 0%, #f5efe5 100%);
+  border: 1px dashed #d4c5a9;
+  border-radius: 12px;
+  text-align: center;
+
+  .no-rating-icon {
+    width: 32px;
+    height: 32px;
+    color: #c4a87c;
+    opacity: 0.5;
+    margin-bottom: 8px;
+  }
+
+  .no-rating-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    color: #8b7355;
+    margin: 0 0 16px;
+  }
+
+  .analyze-btn {
+    --border-color: #8b6f47;
+    --color: #5c4a32;
+    --border-radius: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    .btn-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      color: #6b8e5a;
+    }
+  }
+}
+
+.analyzing-product {
+  margin-top: 20px;
+  padding: 30px 16px;
+  text-align: center;
+
+  ion-spinner {
+    --color: #8b6f47;
+    width: 32px;
+    height: 32px;
+  }
+
+  p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    color: #8b7355;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
+
+// =============================================
+// Apothecary Verdict (redesigned)
+// =============================================
+.verdict-section {
+  margin-top: 20px;
+  padding: 20px 16px;
+  background: linear-gradient(135deg, #faf6f0 0%, #f5efe5 100%);
+  border: 1px solid #d4c5a9;
+  border-radius: 12px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    border: 1px solid rgba(#d4c5a9, 0.3);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+}
+
+// Grade
+.verdict-grade {
+  text-align: center;
+  margin-bottom: 20px;
+
+  .grade-flowers {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 6px;
+
+    .flower-icon {
+      width: 18px;
+      height: 18px;
+      color: #c4a87c;
+      opacity: 0.25;
+
+      &.filled {
+        color: #8b6f47;
+        opacity: 1;
+      }
+    }
+  }
+
+  .grade-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #3d2e1c;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+// Circular Gauges
+.score-gauges {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 80px;
+
+  .gauge-svg {
+    width: 72px;
+    height: 72px;
+    transform: rotate(-90deg);
+  }
+
+  .gauge-bg {
+    fill: none;
+    stroke: rgba(#d4c5a9, 0.35);
+    stroke-width: 6;
+  }
+
+  .gauge-ring {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: #{2 * 3.14159 * 34}; // circumference
+    transition: stroke-dashoffset 1s ease;
+
+    &.actives { stroke: #6b8e5a; }
+    &.purity { stroke: #c4956a; }
+    &.harmony { stroke: #7a4e6a; }
+  }
+
+  .gauge-score {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #3d2e1c;
+  }
+
+  .gauge-label {
+    margin-top: 4px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b7355;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+// Harmony Chips
+.harmony-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.harmony-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  line-height: 1.3;
+
+  .chip-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  &.conflict {
+    background: rgba(#b45309, 0.08);
+    color: #92400e;
+    .chip-icon { color: #b45309; }
+  }
+
+  &.synergy {
+    background: rgba(#6b8e5a, 0.08);
+    color: #3d5a2e;
+    .chip-icon { color: #6b8e5a; }
+  }
+}
+
+// Ingredient Section
+.ingredient-section {
+  margin-top: 16px;
+}
+
+.ingredient-summary {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+
+  .count-badge {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+
+    &.beneficial {
+      background: rgba(#6b8e5a, 0.12);
+      color: #3d5a2e;
+    }
+    &.neutral {
+      background: rgba(#d4c5a9, 0.3);
+      color: #8b7355;
+    }
+    &.caution {
+      background: rgba(#b45309, 0.1);
+      color: #92400e;
+    }
+  }
+}
+
+.ingredient-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.ingredient-card {
+  flex: 0 0 120px;
+  scroll-snap-align: start;
+  padding: 12px 10px;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  border-left: 3px solid transparent;
+
+  &.beneficial {
+    border-left-color: #6b8e5a;
+    .card-icon { color: #6b8e5a; }
+  }
+  &.neutral {
+    border-left-color: #d4c5a9;
+    .card-icon { color: #8b7355; }
+  }
+  &.caution {
+    border-left-color: #b45309;
+    .card-icon { color: #b45309; }
+  }
+
+  .card-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+  }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #3d2e1c;
+    line-height: 1.2;
+  }
+
+  .card-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    color: #8b7355;
+    line-height: 1.2;
   }
 }
