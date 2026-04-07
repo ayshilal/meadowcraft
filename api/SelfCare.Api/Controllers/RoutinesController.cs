@@ -109,10 +109,10 @@ The user owns these skincare products:
 Create an optimal morning AND evening skincare routine using ONLY the products listed above.
 
 Rules:
+- Include as many of the user's products as possible across both routines. The user bought these products and wants to use them. Only skip a product if it genuinely conflicts with another or has no place in a skincare routine.
 - Order products correctly: cleanser → toner → serum/treatment → eye cream → moisturizer → SPF (morning only)
 - Evening can include exfoliants, retinol, heavier treatments
-- Not every product needs to be in both routines
-- Some products might not fit either routine — that's fine, skip them
+- Distribute products across morning and evening — a product doesn't need to be in both, but it should appear in at least one
 - For each step, explain WHY it goes in that position
 - Add practical notes (e.g., ""Apply to damp skin"", ""Wait 1 minute before next step"")
 - Products like retinol, exfoliants, AHAs/BHAs, and masks should NOT be used daily. Create a weekly schedule showing which days they are used vs skipped.
