@@ -397,7 +397,7 @@ export class RoutinePage implements OnInit {
 
     if (this.aiChatService.isConfigured()) {
       this.aiChatService
-        .sendMessage(message, this.steps, this.routineType, this.products)
+        .sendMessage(message, this.steps, this.routineType, this.products, this.chatMessages)
         .subscribe({
           next: (response) => {
             this.chatMessages.push(response);
