@@ -22,6 +22,10 @@ interface ChatApiRequest {
     category: string;
     description: string | null;
   }>;
+  history: Array<{
+    role: string;
+    content: string;
+  }>;
 }
 
 interface ChatApiResponse {
@@ -57,7 +61,8 @@ export class AiChatService {
     userMessage: string,
     steps: RoutineStep[],
     routineType: string,
-    products: Product[] = []
+    products: Product[] = [],
+    chatHistory: ChatMessage[] = []
   ): Observable<ChatMessage> {
     const body: ChatApiRequest = {
       message: userMessage,
@@ -74,6 +79,9 @@ export class AiChatService {
         category: p.category,
         description: p.description || null,
       })),
+      history: chatHistory
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .map(m => ({ role: m.role, content: m.content })),
     };
 
     return this.http.post<ChatApiResponse>(this.apiUrl, body).pipe(

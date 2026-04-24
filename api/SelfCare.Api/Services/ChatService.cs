@@ -59,11 +59,17 @@ public class ChatService : IChatService
 
         var chatClient = client.GetChatClient(deploymentName);
 
-        var messages = new List<ChatMessage>
+        var messages = new List<ChatMessage> { new SystemChatMessage(systemPrompt) };
+
+        foreach (var msg in request.History)
         {
-            new SystemChatMessage(systemPrompt),
-            new UserChatMessage(request.Message)
-        };
+            if (msg.Role == "user")
+                messages.Add(new UserChatMessage(msg.Content));
+            else if (msg.Role == "assistant")
+                messages.Add(new AssistantChatMessage(msg.Content));
+        }
+
+        messages.Add(new UserChatMessage(request.Message));
 
         var completion = await chatClient.CompleteChatAsync(messages, new ChatCompletionOptions
         {
